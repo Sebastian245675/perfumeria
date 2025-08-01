@@ -21,6 +21,12 @@ service cloud.firestore {
       allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
     }
     
+    // Permite guardar emails para newsletter sin autenticación
+    match /emails/{emailId} {
+      allow read: if request.auth != null;
+      allow create: if true; // Cualquiera puede suscribirse
+    }
+    
     // Regla para todos los documentos (protección general)
     match /{document=**} {
       allow read, write: if request.auth != null;

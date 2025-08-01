@@ -131,6 +131,53 @@ export const cancelAppointment = async (appointmentId: string) => {
   return updateAppointmentStatus(appointmentId, 'cancelled');
 };
 
+// ====== EMAILS ======
+
+/**
+ * Guarda un email en la colección de emails para newsletter
+ */
+export const saveEmail = async (email: string) => {
+  try {
+    console.log("Inicio de saveEmail con:", email);
+    
+    // Crear referencia a la colección
+    const emailsCollectionRef = collection(db, 'emails');
+    console.log("Colección de referencia creada");
+    
+    // Verificar si el email ya existe
+    const q = query(
+      emailsCollectionRef,
+      where('email', '==', email),
+      limit(1)
+    );
+    console.log("Query creada para verificar duplicados");
+    
+    const querySnapshot = await getDocs(q);
+    console.log("Resultados de búsqueda:", querySnapshot.size);
+    
+    if (!querySnapshot.empty) {
+      console.log("Email duplicado encontrado");
+      throw new Error('Este email ya está registrado en nuestra lista.');
+    }
+    
+    // Guardar el nuevo email
+    const emailData = {
+      email,
+      createdAt: serverTimestamp(),
+      fechaRegistro: new Date().toISOString() // Fecha legible como respaldo
+    };
+    
+    console.log("Intentando guardar email con datos:", emailData);
+    const docRef = await addDoc(emailsCollectionRef, emailData);
+    console.log("Email guardado exitosamente con ID:", docRef.id);
+    
+    return { id: docRef.id, ...emailData };
+  } catch (error) {
+    console.error("Error detallado al guardar el email:", error);
+    throw error;
+  }
+};
+
 // ====== TESTIMONIALS ======
 
 /**

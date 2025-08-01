@@ -1,10 +1,12 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, Phone, MapPin, Send, ExternalLink, Instagram, Clock, Calendar, Heart, ChevronRight } from "lucide-react";
+import { Mail, Phone, MapPin, Send, ExternalLink, Instagram, Clock, Calendar, Heart, ChevronRight, Check, AlertCircle } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import gsap from "@/lib/gsap-config";
+import { saveEmail } from "@/lib/firestore";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Contact = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -12,6 +14,10 @@ const Contact = () => {
   const contactRef = useRef<HTMLDivElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
+  
+  // Estados para manejo de formulario de email
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [alert, setAlert] = useState<{type: 'success' | 'error', message: string} | null>(null);
 
   // Animation setup
   useEffect(() => {
@@ -74,11 +80,11 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email",
-      content: "hola@nuvo.com",
+      content: "Nuvonicheparfum@gmail.com",
       description: "Respuesta en 24 horas",
       gradient: "from-rose-400 to-amber-400",
       action: "Enviar email",
-      link: "mailto:hola@nuvo.com"
+      link: "mailto:Nuvonicheparfum@gmail.com"
     },
     {
       icon: Phone,
@@ -92,11 +98,11 @@ const Contact = () => {
     {
       icon: MapPin,
       title: "Ubicación",
-      content: "Buenos Aires, Argentina",
+      content: "Avenida san Martín 3430, Vaqueros",
       description: "Citas con previa reserva",
       gradient: "from-teal-400 to-emerald-500",
       action: "Ver en mapa",
-      link: "https://maps.google.com"
+      link: "https://maps.app.goo.gl/S45kEwLyta7EFFSp8"
     },
     {
       icon: Clock,
@@ -119,18 +125,43 @@ const Contact = () => {
     {
       name: "Email",
       icon: Mail,
-      link: "mailto:hola@nuvo.com",
+      link: "mailto:Nuvonicheparfum@gmail.com",
       color: "hover:text-blue-500"
     }
   ];
 
   // Define animations directamente en los componentes en lugar de usar variantes
 
-  const handleSubscribe = () => {
+  const handleSubscribe = async () => {
     if (emailRef.current?.value) {
-      // En un caso real, aquí se enviaría el email a un servicio
-      alert(`¡Gracias por suscribirte con ${emailRef.current.value}!`);
-      emailRef.current.value = '';
+      const email = emailRef.current.value.trim();
+      console.log("Intentando registrar email:", email);
+      
+      // Validar el formato del email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setAlert({ type: 'error', message: 'Por favor, introduce un email válido.' });
+        return;
+      }
+      
+      setIsSubmitting(true);
+      setAlert(null);
+      
+      try {
+        console.log("Llamando a saveEmail...");
+        const result = await saveEmail(email);
+        console.log("Email guardado exitosamente:", result);
+        setAlert({ type: 'success', message: '¡Gracias por suscribirte! Te mantendremos informado de todas nuestras novedades.' });
+        emailRef.current.value = '';
+      } catch (error: any) {
+        console.error("Error al guardar email:", error);
+        setAlert({ 
+          type: 'error', 
+          message: error.message || 'Ha ocurrido un error al suscribirte. Inténtalo de nuevo más tarde.' 
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -234,21 +265,55 @@ const Contact = () => {
                 Recibe actualizaciones exclusivas, novedades y eventos especiales directamente en tu bandeja de entrada.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-2 mb-8">
+              <div className="flex flex-col sm:flex-row gap-2 mb-4">
                 <Input
                   ref={emailRef}
                   type="email"
                   placeholder="tu@email.com"
                   className="font-secondary"
+                  disabled={isSubmitting}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSubscribe();
+                    }
+                  }}
                 />
                 <Button 
                   onClick={handleSubscribe}
                   className="flex-shrink-0 bg-primary hover:bg-primary/90 text-white font-secondary"
+                  disabled={isSubmitting}
                 >
-                  <Send className="w-4 h-4 mr-2" />
-                  Suscribirme
+                  {isSubmitting ? (
+                    <span className="flex items-center">
+                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      Enviando...
+                    </span>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 mr-2" />
+                      Suscribirme
+                    </>
+                  )}
                 </Button>
               </div>
+              
+              {alert && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4"
+                >
+                  <Alert variant={alert.type === 'success' ? 'default' : 'destructive'} className="bg-transparent">
+                    {alert.type === 'success' ? (
+                      <Check className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <AlertCircle className="h-4 w-4" />
+                    )}
+                    <AlertDescription className="text-sm">{alert.message}</AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
               
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Heart className="w-3 h-3 text-rose-400" />

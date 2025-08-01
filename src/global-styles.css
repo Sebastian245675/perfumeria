@@ -1,0 +1,75 @@
+/* global-styles.css */
+/* Este archivo asegura que no haya márgenes o desbordes no deseados en la aplicación */
+
+html, body, #root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Efecto de brillo para indicadores activos en la navegación */
+.shadow-glow {
+  box-shadow: 0 0 8px rgba(194, 165, 157, 0.6), 0 0 4px rgba(194, 165, 157, 0.4);
+}
+
+body {
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Restablecer márgenes en todas las secciones principales */
+section, 
+div.w-screen,
+div.w-full,
+main {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100vw !important;
+  box-sizing: border-box !important;
+}
+
+/* Asegurar que el botón sea visible en el Hero */
+#inicio .relative.z-30 {
+  position: relative;
+  z-index: 30;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Mejorar visibilidad de botones en dispositivos móviles */
+@media (max-width: 768px) {
+  button[variant="default"] {
+    color: var(--foreground) !important;
+    background-color: var(--primary) !important;
+  }
+  
+  .bg-primary {
+    color: var(--foreground) !important;
+  }
+  
+  /* Ajuste específico para botón de inicio de sesión */
+  button.font-secondary {
+    border-color: rgba(194, 165, 157, 0.3);
+  }
+}
+
+/* Evitar que los elementos se salgan de pantalla */
+.overflow-hidden {
+  overflow: hidden;
+}
+
+/* Asegurarse de que las imágenes de fondo se muestren correctamente */
+.bg-image {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}

@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Phone, MapPin, Instagram, Facebook, Twitter } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   return (
     <footer className="bg-elegant text-elegant-foreground py-16">
@@ -33,18 +36,36 @@ const Footer = () => {
             <h4 className="font-primary text-lg font-semibold mb-4">Navegación</h4>
             <ul className="space-y-2">
               {[
-                { name: "Quiénes Somos", href: "#nosotros" },
+                { name: "Quiénes Somos", href: "/nosotros" },
                 { name: "Productos", href: "#productos" },
                 { name: "Cata de Perfumes", href: "#cata" },
                 { name: "Testimonios", href: "#testimonios" }
               ].map((link) => (
                 <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="font-secondary text-sm opacity-90 hover:opacity-100 transition-opacity duration-200"
-                  >
-                    {link.name}
-                  </a>
+                  {link.href.startsWith('#') ? (
+                    isHomePage ? (
+                      <a
+                        href={link.href}
+                        className="font-secondary text-sm opacity-90 hover:opacity-100 transition-opacity duration-200"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={`/${link.href}`}
+                        className="font-secondary text-sm opacity-90 hover:opacity-100 transition-opacity duration-200"
+                      >
+                        {link.name}
+                      </Link>
+                    )
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="font-secondary text-sm opacity-90 hover:opacity-100 transition-opacity duration-200"
+                    >
+                      {link.name}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -76,7 +97,7 @@ const Footer = () => {
             <div className="space-y-3 mb-6">
               <div className="flex items-center">
                 <Mail className="w-4 h-4 mr-2 opacity-70" />
-                <span className="font-secondary text-sm">hola@nuvo.com</span>
+                <span className="font-secondary text-sm">Nuvonicheparfum@gmail.com</span>
               </div>
               <div className="flex items-center">
                 <Phone className="w-4 h-4 mr-2 opacity-70" />
@@ -84,7 +105,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center">
                 <MapPin className="w-4 h-4 mr-2 opacity-70" />
-                <span className="font-secondary text-sm">Buenos Aires, Argentina</span>
+                <span className="font-secondary text-sm">Avenida san Martín 3430, Vaqueros</span>
               </div>
             </div>
 

@@ -93,8 +93,16 @@ const Hero = () => {
     <section 
       id="inicio"
       ref={containerRef}
-      className="relative h-screen flex items-center justify-center overflow-hidden"
-      style={{ position: 'relative' }}
+      className="relative h-screen w-screen flex items-center justify-center overflow-hidden"
+      style={{ 
+        position: 'relative', 
+        margin: 0, 
+        padding: 0, 
+        width: '100vw', 
+        maxWidth: '100vw',
+        left: 0,
+        right: 0
+      }}
     >
       {/* Background Image with Parallax Effect */}
       <motion.div 
@@ -102,7 +110,15 @@ const Hero = () => {
         style={{ 
           backgroundImage: `url(${heroImage})`,
           opacity,
-          scale
+          scale,
+          width: '100vw',
+          height: '100vh',
+          margin: 0,
+          padding: 0,
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-carbon-black/40 via-carbon-black/30 to-background"></div>
@@ -165,11 +181,36 @@ const Hero = () => {
           </motion.p>
         </ParallaxText>
         
-        <motion.div ref={buttonRef}>
+        <motion.div 
+          ref={buttonRef}
+          initial={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-30"
+          style={{
+            display: 'block',
+            visibility: 'visible',
+            opacity: 1,
+            position: 'relative',
+            zIndex: 30
+          }}
+        >
           <Button 
             variant="outline" 
             size="lg"
-            className="font-secondary text-ivory-white border-ivory-white/80 hover:bg-ivory-white hover:text-carbon-black transition-all duration-500 hover:scale-105 group overflow-hidden relative"
+            className="font-secondary text-ivory-white border-ivory-white hover:bg-ivory-white hover:text-carbon-black transition-all duration-500 hover:scale-105 group overflow-hidden relative"
+            style={{ 
+              opacity: 1, 
+              visibility: 'visible', 
+              position: 'relative', 
+              zIndex: 20,
+              transform: 'translateZ(0)',
+              boxShadow: '0 0 15px rgba(0,0,0,0.5), 0 0 5px rgba(255,255,255,0.3)',
+              borderWidth: '2px',
+              borderColor: 'rgba(255,255,255,0.95)',
+              padding: '8px 20px',
+              letterSpacing: '0.5px',
+              fontWeight: 500
+            }}
           >
             <span className="relative z-10">Descubrir Esencias</span>
             <span className="absolute inset-0 bg-ivory-white w-full h-full transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>

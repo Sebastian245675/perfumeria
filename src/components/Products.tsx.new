@@ -1,0 +1,262 @@
+import { useRef, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion, useInView } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import gsap from "@/lib/gsap-config";
+
+const Products = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  
+  const isInView = useInView(sectionRef, { once: false, amount: 0.2 });
+
+  const classifications = [
+    {
+      type: "Por Intensidad",
+      categories: ["Sutil", "Moderada", "Intensa"]
+    },
+    {
+      type: "Por Momento",
+      categories: ["Día", "Noche", "Ocasión Especial"]
+    },
+    {
+      type: "Por Personalidad",
+      categories: ["Minimalista", "Sofisticado", "Auténtico"]
+    }
+  ];
+
+  // Text animation with GSAP
+  useEffect(() => {
+    if (!headingRef.current) return;
+    
+    const textContent = headingRef.current.textContent || "";
+    headingRef.current.innerHTML = "";
+    
+    // Split text into individual spans for animation
+    [...textContent].forEach((char, i) => {
+      const span = document.createElement("span");
+      span.textContent = char;
+      span.style.opacity = "0";
+      span.style.display = "inline-block";
+      span.style.transform = "translateY(20px)";
+      headingRef.current?.appendChild(span);
+    });
+
+    // Set up scroll-triggered animations
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 70%",
+        toggleActions: "play none none reverse"
+      }
+    });
+
+    // Animate heading
+    timeline.to(headingRef.current.children, {
+      opacity: 1,
+      y: 0,
+      stagger: 0.03,
+      duration: 0.6,
+      ease: "power3.out"
+    });
+
+    // Animate text paragraphs
+    if (textRef.current) {
+      timeline.to(
+        textRef.current.children,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.2,
+          ease: "power2.out"
+        },
+        "-=0.3"
+      );
+    }
+
+    // Animate image
+    if (imageRef.current) {
+      timeline.to(
+        imageRef.current,
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 1.2,
+          ease: "power2.out"
+        },
+        "-=0.6"
+      );
+    }
+  }, []);
+
+  return (
+    <section 
+      id="productos" 
+      ref={sectionRef}
+      className="py-32 bg-gradient-to-b from-background to-subtle relative overflow-hidden"
+    >
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 rounded-full blur-3xl opacity-30"></div>
+      <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-primary/5 rounded-full blur-3xl opacity-30"></div>
+      
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header with animated underline */}
+        <div className="text-center mb-16 relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-primary"></div>
+          <h2 
+            ref={headingRef}
+            className="font-primary text-5xl md:text-6xl font-bold text-primary mt-8 mb-8"
+          >
+            Nuestra Filosofía
+          </h2>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center mb-20">
+          {/* Image */}
+          <motion.div 
+            ref={imageRef}
+            className="w-full lg:w-1/2"
+            initial={{ opacity: 0, scale: 0.95 }}
+            style={{ opacity: 0, transform: "scale(0.95)" }}
+          >
+            <div className="rounded-xl overflow-hidden shadow-2xl aspect-[4/3]">
+              <div 
+                className="w-full h-full bg-cover bg-center"
+                style={{ backgroundImage: 'url("/fondoproducto.jpg")' }}
+              ></div>
+            </div>
+          </motion.div>
+
+          {/* Text content */}
+          <div 
+            ref={textRef}
+            className="w-full lg:w-1/2 space-y-5"
+          >
+            <motion.p 
+              className="text-lg font-secondary"
+              initial={{ opacity: 0, y: 20 }}
+              style={{ opacity: 0, transform: "translateY(20px)" }}
+            >
+              Nos especializamos en perfumería nicho, un universo reservado para quienes buscan lo extraordinario. A diferencia de las fragancias comerciales, las creaciones de autor que habitan Nuvo son obras únicas, cuidadosamente elaboradas con ingredientes nobles, fórmulas originales y una profunda libertad creativa. Aquí no hay tendencias que seguir, sino experiencias que descubrir.
+            </motion.p>
+            
+            <motion.p 
+              className="text-lg font-secondary"
+              initial={{ opacity: 0, y: 20 }}
+              style={{ opacity: 0, transform: "translateY(20px)" }}
+            >
+              Cada perfume en Nuvo ha sido seleccionado no solo por su belleza olfativa, sino por su capacidad de provocar sensaciones, despertar recuerdos y acompañarte en el viaje íntimo de la autoexpresión.
+            </motion.p>
+            
+            <motion.p 
+              className="text-lg font-secondary"
+              initial={{ opacity: 0, y: 20 }}
+              style={{ opacity: 0, transform: "translateY(20px)" }}
+            >
+              Te invitamos a dejar atrás lo predecible y sumergirte en un ritual sensorial donde la exclusividad no es un lujo, sino un lenguaje.
+            </motion.p>
+            
+            <motion.p 
+              className="text-xl font-primary text-primary mt-6"
+              initial={{ opacity: 0, y: 20 }}
+              style={{ opacity: 0, transform: "translateY(20px)" }}
+            >
+              Bienvenido a Nuvo, donde el alma del perfume cobra vida.
+            </motion.p>
+          </div>
+        </div>
+
+        {/* Classifications with floating animations */}
+        <div className="mb-24">
+          <div className="relative mb-16">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-16 h-[1px] bg-primary"></div>
+            <h3 className="font-primary text-4xl font-semibold text-center text-primary mt-6 mb-12">
+              Clasificación de Perfumes
+            </h3>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {classifications.map((classification, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Card className="bg-background/60 backdrop-blur-sm border-border/40 overflow-hidden h-full shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-primary/60 scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                  <CardContent className="p-8">
+                    <div className="flex items-center mb-6">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                        <span className="text-xl text-primary">{index + 1}</span>
+                      </div>
+                      <h4 className="font-primary text-xl font-semibold text-primary">
+                        {classification.type}
+                      </h4>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {classification.categories.map((category, catIndex) => (
+                        <motion.div 
+                          key={catIndex} 
+                          className="font-secondary text-sm text-foreground p-3 bg-subtle/80 backdrop-blur-sm rounded-md"
+                          whileHover={{ x: 5 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <div className="flex items-center">
+                            <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
+                            {category}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Call-to-Action Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 backdrop-blur-md text-foreground max-w-3xl mx-auto overflow-hidden border-primary/20">
+            <div className="absolute top-0 left-0 w-full h-full pattern-dots pattern-primary pattern-bg-transparent pattern-opacity-10 pattern-size-2"></div>
+            <CardContent className="p-12 relative z-10">
+              <h3 className="font-primary text-3xl font-semibold mb-6">
+                ¿Tienes una fragancia especial?
+              </h3>
+              <p className="font-secondary text-lg font-light mb-8 max-w-2xl mx-auto">
+                Nos encantaría conocer tu esencia única y considerarla para nuestra colección.
+                Cada perfume cuenta una historia, ¿cuál es la tuya?
+              </p>
+              <Link to="/proponer-fragancia">
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  className="font-secondary group"
+                >
+                  <span>Proponer Fragancia</span>
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default Products;
