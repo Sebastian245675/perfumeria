@@ -140,7 +140,7 @@ const AuthDialog = ({ open, onOpenChange, defaultTab = "login" }: AuthDialogProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md md:max-w-[650px] lg:max-w-[800px] xl:max-w-[900px] bg-background/95 backdrop-blur-lg border-primary/20 shadow-2xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-md md:max-w-[650px] lg:max-w-[850px] xl:max-w-[950px] bg-background/95 backdrop-blur-lg border-primary/20 shadow-2xl p-0 overflow-hidden">
         <div className="absolute right-4 top-4 z-10">
           <Button
             variant="ghost"
@@ -177,8 +177,8 @@ const AuthDialog = ({ open, onOpenChange, defaultTab = "login" }: AuthDialogProp
           </div>
 
           <div className="md:w-[60%] p-8 lg:p-12 bg-gradient-to-b from-background to-background/90">
-            <DialogHeader className="mb-4 md:mb-6">
-              <DialogTitle className="text-center md:text-left font-primary text-2xl md:text-3xl lg:text-4xl text-primary mb-1 md:mb-2">
+            <DialogHeader className="mb-6 md:mb-8">
+              <DialogTitle className="text-center md:text-left font-primary text-2xl md:text-3xl lg:text-4xl text-primary mb-2 md:mb-4">
                 {activeTab === "login" ? "Iniciar Sesión" : "Crear Cuenta"}
               </DialogTitle>
               <DialogDescription className="text-center md:text-left font-secondary text-base md:text-lg text-muted-foreground">
@@ -189,12 +189,12 @@ const AuthDialog = ({ open, onOpenChange, defaultTab = "login" }: AuthDialogProp
               </DialogDescription>
             </DialogHeader>
 
-            <div className="mb-6 md:mb-8">
+            <div className="mb-8 md:mb-10">
               <Tabs 
                 defaultValue={defaultTab} 
                 value={activeTab} 
                 onValueChange={(value) => setActiveTab(value as "login" | "register")}
-                className="mt-4 md:mt-6"
+                className="mt-6"
               >
                 <TabsList className="grid grid-cols-2 w-full max-w-sm md:max-w-md lg:max-w-lg mx-auto mb-4 md:mb-6 rounded-xl overflow-hidden border border-primary/20 p-1 shadow-md bg-black/5">
                   <TabsTrigger 
@@ -211,7 +211,7 @@ const AuthDialog = ({ open, onOpenChange, defaultTab = "login" }: AuthDialogProp
                   </TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="login" className="mt-6 md:mt-8">
+                <TabsContent value="login" className="mt-8 md:mt-10">
                   <form onSubmit={handleLogin} className="max-w-md md:max-w-lg mx-auto px-0">
                     <div className="space-y-6 md:space-y-8">
                       <div className="space-y-3 md:space-y-4">
@@ -285,83 +285,73 @@ const AuthDialog = ({ open, onOpenChange, defaultTab = "login" }: AuthDialogProp
                   </form>
                 </TabsContent>
                 
-                <TabsContent value="register" className="mt-6 md:mt-8">
+                <TabsContent value="register" className="mt-8 md:mt-10">
                   <form onSubmit={handleRegister} className="max-w-md md:max-w-lg mx-auto px-0">
-                    <div className="space-y-4 md:space-y-5">
-                      {/* Primera fila: Nombre y Email en 2 columnas */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div className="space-y-2 md:space-y-3">
-                          <Label htmlFor="register-name" className="font-secondary text-base md:text-lg font-medium pl-1">
-                            Nombre Completo
-                          </Label>
-                          <div className="relative">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
-                            <Input
-                              id="register-name"
-                              name="name"
-                              type="text"
-                              placeholder="Tu nombre completo"
-                              value={registerData.name}
-                              onChange={handleRegisterChange}
-                              className="pl-12 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-12 md:h-14 text-base rounded-xl shadow-sm"
-                              required
-                            />
-                          </div>
+                    <div className="space-y-6 md:space-y-8">
+                      <div className="space-y-3 md:space-y-4">
+                        <Label htmlFor="register-name" className="font-secondary text-base md:text-lg lg:text-xl font-medium pl-1">
+                          Nombre Completo
+                        </Label>
+                        <div className="relative">
+                          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-primary/70" />
+                          <Input
+                            id="register-name"
+                            name="name"
+                            type="text"
+                            placeholder="Tu nombre completo"
+                            value={registerData.name}
+                            onChange={handleRegisterChange}
+                            className="pl-12 md:pl-14 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-14 md:h-16 text-base md:text-lg rounded-xl shadow-sm"
+                            required
+                          />
                         </div>
-                        
-                        <div className="space-y-2 md:space-y-3">
-                          <Label htmlFor="register-email" className="font-secondary text-base md:text-lg font-medium pl-1">
-                            Email
-                          </Label>
-                          <div className="relative">
-                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
-                            <Input
-                              id="register-email"
-                              name="email"
-                              type="email"
-                              placeholder="tu@email.com"
-                              value={registerData.email}
-                              onChange={handleRegisterChange}
-                              className="pl-12 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-12 md:h-14 text-base rounded-xl shadow-sm"
-                              required
-                            />
-                          </div>
+                      </div>
+                      
+                      <div className="space-y-3 md:space-y-4">
+                        <Label htmlFor="register-email" className="font-secondary text-base md:text-lg lg:text-xl font-medium pl-1">
+                          Email
+                        </Label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-primary/70" />
+                          <Input
+                            id="register-email"
+                            name="email"
+                            type="email"
+                            placeholder="tu@email.com"
+                            value={registerData.email}
+                            onChange={handleRegisterChange}
+                            className="pl-12 md:pl-14 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-14 md:h-16 text-base md:text-lg rounded-xl shadow-sm"
+                            required
+                          />
                         </div>
                       </div>
 
-                      {/* Segunda fila: Teléfono en una columna en móvil, y junto con otro campo en desktop para balance */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div className="space-y-2 md:space-y-3">
-                          <Label htmlFor="register-phone" className="font-secondary text-base md:text-lg font-medium pl-1">
-                            Teléfono
-                          </Label>
-                          <div className="relative">
-                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
-                            <Input
-                              id="register-phone"
-                              name="phone"
-                              type="tel"
-                              placeholder="Tu número de teléfono"
-                              value={registerData.phone}
-                              onChange={handleRegisterChange}
-                              className="pl-12 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-12 md:h-14 text-base rounded-xl shadow-sm"
-                              required
-                            />
-                          </div>
+                      <div className="space-y-3 md:space-y-4">
+                        <Label htmlFor="register-phone" className="font-secondary text-base md:text-lg lg:text-xl font-medium pl-1">
+                          Teléfono
+                        </Label>
+                        <div className="relative">
+                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-primary/70" />
+                          <Input
+                            id="register-phone"
+                            name="phone"
+                            type="tel"
+                            placeholder="Tu número de teléfono"
+                            value={registerData.phone}
+                            onChange={handleRegisterChange}
+                            className="pl-12 md:pl-14 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-14 md:h-16 text-base md:text-lg rounded-xl shadow-sm"
+                            required
+                          />
                         </div>
-                        
-                        {/* Columna vacía para mantener el balance en desktop */}
-                        <div className="hidden md:block"></div>
                       </div>
                       
-                      {/* Tercera fila: Contraseñas en 2 columnas */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        <div className="space-y-2 md:space-y-3">
-                          <Label htmlFor="register-password" className="font-secondary text-base md:text-lg font-medium pl-1">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-2">
+                        <div className="space-y-3 md:space-y-4">
+                          <Label htmlFor="register-password" className="font-secondary text-base md:text-lg lg:text-xl font-medium pl-1">
                             Contraseña
                           </Label>
                           <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-primary/70" />
                             <Input
                               id="register-password"
                               name="password"
@@ -369,19 +359,19 @@ const AuthDialog = ({ open, onOpenChange, defaultTab = "login" }: AuthDialogProp
                               placeholder="Mínimo 6 caracteres"
                               value={registerData.password}
                               onChange={handleRegisterChange}
-                              className="pl-12 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-12 md:h-14 text-base rounded-xl shadow-sm"
+                              className="pl-12 md:pl-14 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-14 md:h-16 text-base md:text-lg rounded-xl shadow-sm"
                               required
                               minLength={6}
                             />
                           </div>
                         </div>
                         
-                        <div className="space-y-2 md:space-y-3">
-                          <Label htmlFor="register-confirm-password" className="font-secondary text-base md:text-lg font-medium pl-1">
+                        <div className="space-y-3 md:space-y-4">
+                          <Label htmlFor="register-confirm-password" className="font-secondary text-base md:text-lg lg:text-xl font-medium pl-1">
                             Confirmar
                           </Label>
                           <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary/70" />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-primary/70" />
                             <Input
                               id="register-confirm-password"
                               name="confirmPassword"
@@ -389,33 +379,33 @@ const AuthDialog = ({ open, onOpenChange, defaultTab = "login" }: AuthDialogProp
                               placeholder="Confirmar"
                               value={registerData.confirmPassword}
                               onChange={handleRegisterChange}
-                              className="pl-12 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-12 md:h-14 text-base rounded-xl shadow-sm"
+                              className="pl-12 md:pl-14 font-secondary bg-background/80 border-primary/30 focus:border-primary/50 h-14 md:h-16 text-base md:text-lg rounded-xl shadow-sm"
                               required
                             />
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-start space-x-3 mt-1 bg-black/5 p-2 md:p-3 rounded-lg border border-primary/10">
-                        <Info className="h-4 w-4 text-primary/70 mt-0.5 flex-shrink-0" />
-                        <p className="text-muted-foreground font-secondary text-xs">
+                      <div className="flex items-start space-x-4 mt-6 mb-4 bg-black/5 p-4 rounded-lg border border-primary/10">
+                        <Info className="h-5 w-5 md:h-6 md:w-6 text-primary/70 mt-0.5 flex-shrink-0" />
+                        <p className="text-muted-foreground font-secondary text-sm md:text-base">
                           Al registrarte, aceptas nuestros términos y condiciones y nuestra política de privacidad.
                         </p>
                       </div>
 
                       <Button 
                         type="submit" 
-                        className="w-full font-secondary h-12 md:h-14 mt-5 text-base md:text-lg transition-all duration-300 shadow-lg hover:shadow-xl bg-primary hover:bg-primary/90 rounded-xl"
+                        className="w-full font-secondary h-14 md:h-16 mt-8 text-base md:text-lg lg:text-xl transition-all duration-300 shadow-lg hover:shadow-xl bg-primary hover:bg-primary/90 rounded-xl"
                         disabled={loading}
                       >
                         {loading ? "Creando cuenta..." : "Crear Cuenta"}
                       </Button>
 
-                      <div className="text-center pt-3 md:pt-4">
+                      <div className="text-center pt-4 md:pt-6">
                         <button
                           type="button"
                           onClick={() => setActiveTab("login")}
-                          className="text-sm md:text-base text-primary hover:underline hover:text-primary/80 font-secondary transition-all duration-300"
+                          className="text-base md:text-lg text-primary hover:underline hover:text-primary/80 font-secondary transition-all duration-300"
                         >
                           ¿Ya tienes cuenta? Inicia sesión
                         </button>

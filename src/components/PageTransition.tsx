@@ -16,7 +16,7 @@ const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
       // Asegurar que el body tiene el estilo correcto
       document.body.style.overflow = 'auto';
       document.body.style.height = 'auto';
-      document.body.style.position = 'static';
+      document.body.style.position = 'relative'; // Cambiado de static a relative para evitar advertencia
       document.body.style.width = 'auto';
       
       // Trigger resize para forzar recálculo de elementos
@@ -38,7 +38,14 @@ const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
       className="w-full m-0 p-0 overflow-x-hidden"
-      style={{ width: '100vw', margin: 0, padding: 0, maxWidth: '100%', overflowX: 'hidden' }}
+      style={{ 
+        width: '100vw', 
+        margin: 0, 
+        padding: 0, 
+        maxWidth: '100%', 
+        overflowX: 'hidden',
+        position: 'relative' // Añadida posición relativa para solucionar la advertencia de framer-motion
+      }}
     >
       {children}
     </motion.div>

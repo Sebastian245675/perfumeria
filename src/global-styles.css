@@ -1,5 +1,5 @@
-/* global-styles.css */
-/* Este archivo asegura que no haya márgenes o desbordes no deseados en la aplicación */
+/* global-styles.css - Performance Optimized */
+/* Performance optimizations for smooth rendering and scrolling */
 
 html, body, #root {
   width: 100%;
@@ -8,16 +8,48 @@ html, body, #root {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Efecto de brillo para indicadores activos en la navegación */
+/* Using transform: translateZ(0) to enable hardware acceleration */
+.hw-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Reduced shadow effect that's less demanding on mobile GPUs */
 .shadow-glow {
-  box-shadow: 0 0 8px rgba(194, 165, 157, 0.6), 0 0 4px rgba(194, 165, 157, 0.4);
+  box-shadow: 0 0 5px rgba(194, 165, 157, 0.4);
 }
 
 body {
   overflow-x: hidden;
   position: relative;
+  text-rendering: optimizeSpeed;
+}
+
+/* Animación de sacudida para errores */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake-animation {
+  animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Animación de pulso para confirmaciones */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.pulse-animation {
+  animation: pulse 0.6s ease-in-out both;
 }
 
 /* Restablecer márgenes en todas las secciones principales */

@@ -4,7 +4,8 @@
 
 /* NUVÓ Design System - Elegant, Minimalist, Sophisticated */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Optimized font loading - only essential weights */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {

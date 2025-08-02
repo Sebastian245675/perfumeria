@@ -47,7 +47,9 @@ const Index = () => {
           <Tasting />
           <Testimonials />
           <Contact />
-          <Appointment />
+          <div id="agenda">
+            <Appointment />
+          </div>
         </main>
         <Footer />
       </div>

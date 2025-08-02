@@ -1,9 +1,33 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, Users, Sparkles } from "lucide-react";
+import { Calendar, Clock, Users, Sparkles, X } from "lucide-react";
 import essenceImage from "@/assets/essence-abstract.jpg";
+import { useState } from "react";
+import { format } from "date-fns";
+import { AppointmentCalendarNew } from "./AppointmentCalendarNew";
+import { es } from "date-fns/locale";
 
 const Tasting = () => {
+  const [showCalendar, setShowCalendar] = useState(false);
+  
+  // Manejador para cuando se selecciona una fecha y hora
+  const handleDateTimeSelect = (date?: Date, timeSlot?: string) => {
+    if (date && timeSlot) {
+      // Guardar la fecha y hora seleccionadas en sessionStorage
+      sessionStorage.setItem('selectedDate', format(date, 'yyyy-MM-dd'));
+      sessionStorage.setItem('selectedTime', timeSlot);
+    }
+  };
+  
+  // Manejador para cuando se quiere ver el formulario de reserva
+  const handleViewAppointmentForm = () => {
+    const element = document.getElementById("agenda");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+    // Cerrar el calendario después de la selección completa
+    setShowCalendar(false);
+  };
   const tastingExperiences = [
     {
       title: "Cata Íntima",
@@ -95,7 +119,16 @@ const Tasting = () => {
                     ))}
                   </ul>
                 </div>
-                <Button variant="outline" className="w-full font-secondary">
+                <Button 
+                  variant="outline" 
+                  className="w-full font-secondary"
+                  onClick={() => {
+                    const element = document.getElementById("agenda");
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
+                >
                   Reservar Cata
                 </Button>
               </CardContent>
@@ -153,7 +186,11 @@ const Tasting = () => {
                 Reserva tu cata personalizada y vive una experiencia olfativa inolvidable
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="secondary" className="font-secondary">
+                <Button 
+                  variant="secondary" 
+                  className="font-secondary"
+                  onClick={() => setShowCalendar(true)}
+                >
                   <Calendar className="w-4 h-4 mr-2" />
                   Ver Disponibilidad
                 </Button>
@@ -164,6 +201,26 @@ const Tasting = () => {
             </CardContent>
           </Card>
         </div>
+        
+        {/* Modal de Calendario de Disponibilidad */}
+        {showCalendar && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-background rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto">
+              <div className="flex justify-between items-center p-4 border-b">
+                <h3 className="font-primary text-xl font-semibold">Disponibilidad de Citas</h3>
+                <Button variant="ghost" size="icon" onClick={() => setShowCalendar(false)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="p-4">
+                <AppointmentCalendarNew 
+                  onSelectDateTime={handleDateTimeSelect}
+                  onViewAppointmentForm={handleViewAppointmentForm}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

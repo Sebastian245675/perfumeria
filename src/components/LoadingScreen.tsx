@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedLogo from './AnimatedLogo';
 
@@ -11,131 +11,96 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
   const [textIndex, setTextIndex] = useState(0);
   const [showFinalText, setShowFinalText] = useState(false);
   
-  // Textos relacionados con perfumes y esencias
+  // Simplified loading texts - fewer items
   const loadingTexts = useMemo(() => [
-    "Destilando notas de ámbar...",
-    "Capturando esencias florales...",
-    "Mezclando fragancias exclusivas...",
-    "Evocando sensaciones únicas...",
-    "Perfeccionando cada acorde..."
+    "Cargando fragancias...",
+    "Preparando experiencia...",
+    "Casi listo..."
   ], []);
   
   const finalText = "NUVÓ Essence Ritual";
 
-  // Función optimizada para la animación de carga
-  const handleLoading = useCallback(() => {
+  // Simplified loading function with faster progression
+  useEffect(() => {
     const startTime = Date.now();
-    const minDisplayTime = 2000; // Reducido a 2 segundos para mayor fluidez
+    const minDisplayTime = 1500; // Reduced to 1.5 seconds for faster experience
     
-    // Usar requestAnimationFrame para mejor rendimiento en animaciones
-    let animationId: number;
-    let lastTimestamp = 0;
-    const targetFPS = 60;
-    const frameInterval = 1000 / targetFPS;
-    
-    const animate = (timestamp: number) => {
-      if (!lastTimestamp || timestamp - lastTimestamp >= frameInterval) {
-        lastTimestamp = timestamp;
+    // Use more efficient loading progression
+    const loadingInterval = setInterval(() => {
+      setLoadingProgress((prev) => {
+        // Faster progression
+        const incrementFactor = prev < 50 ? 5 : 8;
+        const newProgress = prev + incrementFactor;
         
-        setLoadingProgress((prev) => {
-          // Curva de aceleración más natural
-          const incrementFactor = prev < 30 ? 2 : (prev < 70 ? 4 : 8);
-          const newProgress = prev + (Math.random() * incrementFactor * 0.7);
+        if (newProgress >= 100) {
+          clearInterval(loadingInterval);
+          setShowFinalText(true);
           
-          if (newProgress >= 100) {
-            cancelAnimationFrame(animationId);
-            setShowFinalText(true);
-            
-            const elapsedTime = Date.now() - startTime;
-            const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
-            
-            setTimeout(() => {
-              onLoadingComplete();
-            }, remainingTime + 800); // Reducido a 800ms para una transición más rápida
-            
-            return 100;
-          }
+          const elapsedTime = Date.now() - startTime;
+          const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
           
-          return newProgress;
-        });
-      }
-      
-      animationId = requestAnimationFrame(animate);
-    };
+          setTimeout(() => {
+            onLoadingComplete();
+          }, remainingTime + 500); // Reduced to 500ms for faster transition
+          
+          return 100;
+        }
+        
+        return newProgress;
+      });
+    }, 100); // Update every 100ms for smoother progression
     
-    animationId = requestAnimationFrame(animate);
-    
-    // Cambiar el texto cada 1.2 segundos (más rápido para mayor dinamismo)
+    // Change text less frequently - every 2 seconds
     const textInterval = setInterval(() => {
       setTextIndex((prev) => (prev + 1) % loadingTexts.length);
-    }, 1200);
+    }, 2000);
     
     return () => {
-      cancelAnimationFrame(animationId);
+      clearInterval(loadingInterval);
       clearInterval(textInterval);
     };
   }, [onLoadingComplete, loadingTexts.length]);
 
-  // Iniciar la animación cuando el componente se monta
+  // Set up the body styling for the loading screen
   useEffect(() => {
-    // Precargar la imagen del logo para reducir el parpadeo
+    // Preload logo image
     const logoImage = new Image();
     logoImage.src = '/logocarga.png';
     
-    // Asegurar que el body está configurado para la pantalla de carga
+    // Configure body for loading screen
     document.body.classList.add('loading-active');
     document.body.style.overflow = 'hidden';
     document.body.style.height = '100vh';
     document.body.style.width = '100vw';
     document.body.style.position = 'fixed';
     
-    // Aplicar la función optimizada de carga
-    const cleanup = handleLoading();
-    
     return () => {
-      // Limpiar completamente el estado de loading al desmontar
+      // Clean up body styling when component unmounts
       document.body.classList.remove('loading-active');
       document.body.style.overflow = 'auto';
       document.body.style.height = 'auto';
       document.body.style.width = 'auto';
       document.body.style.position = 'static';
-      cleanup();
     };
-  }, [handleLoading]);
+  }, []);
 
-  // Renderizamos las partículas de perfume memoizadas para evitar recálculos
+  // Minimal static particles for visual interest without animation
   const perfumeParticles = useMemo(() => {
-    return Array.from({ length: 12 }).map((_, index) => {
-      const size = Math.random() * 4 + 2;
-      const duration = Math.random() * 2 + 2;
-      const delay = Math.random() * 2;
-      const startPosition = Math.random() * 100;
+    return Array.from({ length: 4 }).map((_, index) => {
+      const size = 3;
+      const startPosition = 20 + (index * 20); // Even distribution
       
       return (
-        <motion.div
+        <div
           key={`perfume-particle-${index}`}
           className="absolute rounded-full pointer-events-none"
           style={{
             width: size,
             height: size,
-            bottom: "-5%",
+            bottom: "40%",
             left: `${startPosition}%`,
-            filter: "blur(1px)",
-            background: index % 2 === 0 ? 
-              "rgba(194, 163, 131, 0.4)" : 
-              "rgba(226, 209, 187, 0.3)"
-          }}
-          animate={{
-            y: [0, `-${70 + Math.random() * 30}vh`],
-            x: [0, -15 + Math.random() * 30],
-            opacity: [0, 0.8, 0],
-            scale: [0, 1, 0.5],
-          }}
-          transition={{
-            duration: duration,
-            repeat: Infinity,
-            delay: delay,
-            ease: "easeOut",
+            opacity: 0.5,
+            background: "rgba(194, 163, 131, 0.4)"
           }}
         />
       );
@@ -153,131 +118,51 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
       {/* Fondo mejorado con aspecto elegante para perfumes */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-[#20181A] to-[#1a1a1a]" />
       
-      {/* Efecto de niebla/vapor de perfume */}
+      {/* Simple gradient background */}
       <div className="absolute inset-0 opacity-30" style={{
         background: "radial-gradient(circle at 50% 50%, rgba(194, 163, 131, 0.15), rgba(0, 0, 0, 0) 70%)"
       }} />
       
-      {/* Partículas que simulan gotas de perfume flotantes - memoizadas */}
+      {/* Minimal static particles */}
       {perfumeParticles}
 
       <div className="relative z-10 w-full max-w-md px-4 flex flex-col items-center">
-        {/* Logo animado con efectos optimizados */}
-        <motion.div 
-          className="mb-12"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 100, 
-            delay: 0.2 
-          }}
-        >
+        {/* Logo - simplified animation */}
+        <div className="mb-12">
           <AnimatedLogo />
-        </motion.div>
-
-        {/* Texto de carga con cambio suave */}
-        <motion.div
-          className="text-center mb-8 h-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <AnimatePresence mode="wait">
-            {showFinalText ? (
-              <motion.p
-                key="final"
-                className="font-primary text-2xl text-primary font-semibold"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.5 }}
-              >
-                {finalText}
-              </motion.p>
-            ) : (
-              <motion.p
-                key={textIndex}
-                className="font-primary text-lg text-white/90"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                {loadingTexts[textIndex]}
-              </motion.p>
-            )}
-          </AnimatePresence>
-        </motion.div>
-        
-        {/* Barra de progreso estilizada mejorada */}
-        <motion.div
-          className="relative w-full max-w-xs"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          {/* Línea base */}
-          <motion.div
-            className="w-full bg-white/10 h-1 rounded-full overflow-hidden"
-            initial={{ width: "0%" }}
-            animate={{ width: "100%" }}
-            transition={{ delay: 0.7, duration: 0.5 }}
-          >
-            {/* Barra de progreso con brillo de perfume */}
-            <motion.div
-              className="relative h-full bg-gradient-to-r from-primary/70 via-primary to-primary/70 rounded-full"
-              style={{ width: `${loadingProgress}%` }}
-            >
-              {/* Efecto de brillo que se mueve más rápido */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
-                animate={{
-                  left: ["-100%", "200%"],
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 1.5, // Más rápido para mayor fluidez
-                  ease: "linear",
-                }}
-                style={{ width: "50%" }}
-              />
-            </motion.div>
-          </motion.div>
-          
-          {/* Porcentaje */}
-          <motion.p
-            className="absolute -right-8 -top-6 text-xs font-medium text-primary/80"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: loadingProgress > 5 ? 1 : 0 }}
-          >
-            {Math.round(loadingProgress)}%
-          </motion.p>
-        </motion.div>
-        
-        {/* Efecto de anillos concéntricos - reducidos para mejor rendimiento */}
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <motion.div
-              key={`ring-${i}`}
-              className="absolute rounded-full border border-primary/20"
-              style={{
-                width: `${320 + i * 120}px`,
-                height: `${320 + i * 120}px`,
-              }}
-              animate={{
-                scale: [1, 1.08, 1],
-                opacity: [0.1, 0.3, 0.1],
-              }}
-              transition={{
-                duration: 2.5 + i,
-                repeat: Infinity,
-                delay: i * 0.3,
-                ease: "easeInOut",
-              }}
-            />
-          ))}
         </div>
+
+        {/* Loading text - simplified with no exit animations */}
+        <div className="text-center mb-8 h-8">
+          {showFinalText ? (
+            <p className="font-primary text-2xl text-primary font-semibold">
+              {finalText}
+            </p>
+          ) : (
+            <p className="font-primary text-lg text-white/90">
+              {loadingTexts[textIndex]}
+            </p>
+          )}
+        </div>
+        
+        {/* Simplified progress bar without animations */}
+        <div className="relative w-full max-w-xs">
+          {/* Base line */}
+          <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+            {/* Progress bar - no gradient or shine effect */}
+            <div
+              className="h-full bg-primary rounded-full"
+              style={{ width: `${loadingProgress}%` }}
+            />
+          </div>
+          
+          {/* Percentage */}
+          <p className="absolute -right-8 -top-6 text-xs font-medium text-primary/80">
+            {Math.round(loadingProgress)}%
+          </p>
+        </div>
+        
+        {/* Removed concentric rings effect */}
       </div>
     </motion.div>
   );

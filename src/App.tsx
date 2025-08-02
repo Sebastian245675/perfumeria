@@ -21,68 +21,52 @@ const App = () => {
   const [contentVisible, setContentVisible] = useState(false);
 
   useEffect(() => {
-    // Aseguramos que la pantalla de carga se muestre primero
+    // Hide overflow during loading
     document.body.style.overflow = 'hidden';
     
-    // Precargar imágenes importantes para evitar parpadeos después de la pantalla de carga
+    // Preload only essential images, reduced list for better performance
     const preloadImages = [
       "/logo.png",
-      "/logocarga.png",
-      "/src/assets/hero-perfume.jpg",
-      "/src/assets/essence-abstract.jpg",
-      "/src/assets/perfume-collection.jpg",
-      "/fondo1.jpg",
-      "/fondo2.jpg",
-      "/revista1.png",
-      "/revista2.png",
-      "/revista3.png",
-      "/revistas-banner.jpg",
-      "/products-banner.jpg",
-      "/perfume1.jpg",
-      "/perfume2.jpg",
-      "/perfume3.jpg",
-      "/perfume4.jpg",
+      "/logocarga.png"
     ];
 
     const imagePromises = preloadImages.map((src) => {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         const img = new Image();
         img.src = src;
         img.onload = resolve;
-        img.onerror = reject;
+        // Don't reject on error, just continue loading
+        img.onerror = resolve;
       });
     });
 
-    // Esperar a que se carguen todas las imágenes importantes
-    Promise.all(imagePromises)
-      .catch((err) => console.error("Error precargando imágenes:", err))
+    // Set a maximum loading time to ensure the app loads even if images don't
+    const timeoutPromise = new Promise(resolve => {
+      setTimeout(resolve, 2000); // 2 seconds maximum loading time
+    });
+
+    // Use race to proceed with either images loaded or timeout reached
+    Promise.race([Promise.all(imagePromises), timeoutPromise])
       .finally(() => {
-        // Marcar la aplicación como lista después de un tiempo mínimo
-        // Mantenemos la pantalla de carga por al menos 3 segundos para asegurar una buena experiencia
-        setTimeout(() => {
-          // No hacemos nada aquí, dejamos que LoadingScreen controle cuando termina
-        }, 3000);
+        // Don't need additional timeout
       });
   }, []);
 
   const handleLoadingComplete = () => {
-    // Cuando la animación de carga termina, permitimos que se muestre el contenido
+    // Show content immediately
     setContentVisible(true);
     
-    // Luego de un breve retraso para la transición, quitamos la pantalla de carga
+    // Remove loading screen with minimal delay
     setTimeout(() => {
       setIsLoading(false);
-      // Asegurar que el scroll se restaura correctamente
+      // Restore scroll behavior
       document.body.style.overflow = 'auto';
       document.body.style.height = 'auto';
       document.body.style.position = 'static';
       document.body.style.width = 'auto';
-      // Forzar un reflow para evitar que la pantalla quede en blanco
+      // Scroll to top
       window.scrollTo(0, 0);
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));
-      }, 100);
-    }, 600); // Reducir el tiempo para una transición más rápida
+    }, 300); // Reduced delay for faster transition
   };
 
   return (

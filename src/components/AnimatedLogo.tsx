@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const AnimatedLogo: React.FC = () => {
-  // Partículas del logo optimizadas - menos partículas para mejor rendimiento
-  const particles = Array.from({ length: 6 }).map((_, i) => {
-    const angle = (Math.PI * 2 * i) / 6;
+  // Reduced number of particles for better performance (especially on mobile)
+  const particles = Array.from({ length: 3 }).map((_, i) => {
+    const angle = (Math.PI * 2 * i) / 3;
     const radius = 50;
     const x = Math.cos(angle) * radius;
     const y = Math.sin(angle) * radius;
@@ -14,139 +14,65 @@ const AnimatedLogo: React.FC = () => {
 
   return (
     <div className="relative w-44 h-44 flex items-center justify-center">
-      {/* Anillo giratorio */}
+      {/* Rotating ring with simplified animation */}
       <motion.div
         className="absolute w-full h-full rounded-full border border-primary/30"
-        animate={{ 
-          rotate: 360,
-          scale: [1, 1.05, 1],
-        }}
+        animate={{ rotate: 360 }}
         transition={{ 
-          rotate: { duration: 6, ease: "linear", repeat: Infinity }, // Más rápido
-          scale: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+          duration: 6, 
+          ease: "linear", 
+          repeat: Infinity,
+          repeatType: "loop"
         }}
       />
       
-      {/* Segundo anillo giratorio */}
-      <motion.div
-        className="absolute w-[90%] h-[90%] rounded-full border border-primary/20"
-        animate={{ rotate: -360 }}
-        transition={{ duration: 10, ease: "linear", repeat: Infinity }} // Más rápido
-      />
+      {/* Second rotating ring removed for better performance */}
       
-      {/* Imagen del logo con efectos mejorados */}
+      {/* Logo image with simplified effect */}
       <motion.div
         className="relative z-10"
         animate={{ 
           scale: [1, 1.03, 1],
         }}
         transition={{ 
-          duration: 1.8, // Más rápido
+          duration: 2.5,
           repeat: Infinity, 
-          ease: "easeInOut" 
+          ease: "easeInOut",
+          repeatType: "loop"
         }}
       >
-        <motion.img
+        <img
           src="/logocarga.png"
           alt="NUVÓ"
           className="w-36 h-36 object-contain drop-shadow-lg"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ 
-            opacity: 1, 
-            scale: 1,
-            filter: [
-              "drop-shadow(0 0 8px rgba(194, 163, 131, 0.6))", // Color ámbar/dorado para perfumes
-              "drop-shadow(0 0 16px rgba(194, 163, 131, 0.3))",
-              "drop-shadow(0 0 8px rgba(194, 163, 131, 0.6))",
-            ],
-          }}
-          transition={{ 
-            duration: 0.5,
-            filter: {
-              duration: 2.5, // Más rápido
-              repeat: Infinity,
-              ease: "easeInOut",
-            }
+          style={{
+            filter: "drop-shadow(0 0 8px rgba(194, 163, 131, 0.6))"
           }}
         />
       </motion.div>
       
-      {/* Efecto de luz principal - Color ámbar para perfumes */}
-      <motion.div
+      {/* Simplified light effect - static instead of animated for better performance */}
+      <div
         className="absolute inset-0 rounded-full"
         style={{
           background: "radial-gradient(circle, rgba(194, 163, 131, 0.2) 0%, rgba(194, 163, 131, 0) 70%)",
           zIndex: -1,
         }}
-        animate={{
-          opacity: [0.6, 0.8, 0.6],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
       />
       
-      {/* Partículas orbitando optimizadas */}
+      {/* Partículas orbitando - reduced and simplified */}
       {particles.map((particle, index) => (
-        <motion.div
+        <div
           key={index}
           className="absolute w-2 h-2 bg-primary/70 rounded-full"
-          initial={{ x: particle.x * 0.5, y: particle.y * 0.5, opacity: 0 }}
-          animate={{
-            x: [particle.x * 0.8, particle.x, particle.x * 0.9],
-            y: [particle.y * 0.8, particle.y, particle.y * 0.9],
-            opacity: [0.4, 0.8, 0.4],
-            scale: [0.8, 1.2, 0.8],
-          }}
-          transition={{
-            duration: 2.5, // Más rápido
-            delay: particle.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
+          style={{
+            transform: `translate(${particle.x}px, ${particle.y}px)`,
+            opacity: 0.6,
           }}
         />
       ))}
       
-      {/* Pequeños destellos aleatorios - efecto de fragancia */}
-      {Array.from({ length: 8 }).map((_, index) => { // Reducidos para mejor rendimiento
-        const size = Math.random() * 2 + 1;
-        const angle = Math.random() * Math.PI * 2;
-        const radius = 20 + Math.random() * 30;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        
-        return (
-          <motion.div
-            key={`sparkle-${index}`}
-            className="absolute rounded-full"
-            style={{
-              width: size,
-              height: size,
-              background: index % 2 === 0 ? "rgba(255, 255, 255, 0.8)" : "rgba(194, 163, 131, 0.7)", // Alternar entre blanco y ámbar
-            }}
-            initial={{ 
-              x: x * 1.5, 
-              y: y * 1.5, 
-              opacity: 0 
-            }}
-            animate={{
-              x: [x, x * 0.9, x * 1.1],
-              y: [y, y * 1.1, y * 0.9],
-              opacity: [0, 0.8, 0],
-              scale: [0, 1, 0],
-            }}
-            transition={{
-              duration: 1.5 + Math.random() * 2, // Más rápido
-              delay: Math.random() * 3, // Delay más corto
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        );
-      })}
+      {/* Removed random sparkles for better performance */}
     </div>
   );
 };

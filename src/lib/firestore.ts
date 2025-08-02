@@ -58,6 +58,242 @@ export const checkAppointmentAvailability = async (date: string, time: string) =
 };
 
 /**
+ * Crear una nueva cita
+ */
+export const createAppointment = async (appointmentData: Omit<Appointment, 'id'>) => {
+  try {
+    const docRef = await addDoc(collection(db, 'appointments'), {
+      ...appointmentData,
+      createdAt: serverTimestamp()
+    });
+    
+    return {
+      id: docRef.id,
+      ...appointmentData
+    };
+  } catch (error) {
+    console.error('Error al crear la cita:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtiene la disponibilidad de un rango de fechas
+ * Retorna un objeto con las fechas como claves y la cantidad de citas como valores
+ */
+export const getMonthlyAvailability = async (startDate: Date, endDate: Date) => {
+  try {
+    // Formatear las fechas como strings YYYY-MM-DD para la consulta
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+    
+    const q = query(
+      collection(db, 'appointments'),
+      where('date', '>=', startDateStr),
+      where('date', '<=', endDateStr),
+      where('status', 'in', ['pending', 'confirmed'])
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    // Crear un mapa con todas las fechas inicializadas en 0
+    const availabilityMap: Record<string, number> = {};
+    
+    // Contar la cantidad de citas por fecha
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const date = data.date;
+      
+      if (!availabilityMap[date]) {
+        availabilityMap[date] = 0;
+      }
+      
+      availabilityMap[date]++;
+    });
+    
+    return availabilityMap;
+  } catch (error) {
+    console.error('Error al obtener disponibilidad mensual:', error);
+    throw error;
+  }
+};
+
+/**
+ * Tipo para los slots de tiempo disponibles/reservados
+ */
+export interface TimeSlotInfo {
+  time: string;
+  isAvailable: boolean;
+  appointmentId?: string;
+  service?: string;
+  reservedBy?: string; // Nombre del cliente que reservó (para administradores)
+}
+
+/**
+ * Tipo para la disponibilidad detallada por fecha
+ */
+export interface DetailedDateAvailability {
+  date: string;
+  totalSlots: number;
+  availableSlots: number;
+  bookedSlots: number;
+  timeSlots: TimeSlotInfo[];
+}
+
+/**
+ * Obtiene la disponibilidad detallada de un mes completo con información de cada slot de tiempo
+ */
+/**
+ * Obtiene los horarios disponibles para una fecha específica
+ */
+export const getAvailableTimeSlotsForDate = async (
+  date: string, 
+  allTimeSlots: string[] = ["10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+) => {
+  try {
+    const q = query(
+      collection(db, 'appointments'),
+      where('date', '==', date),
+      where('status', 'in', ['pending', 'confirmed'])
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    // Crear un mapa con todos los slots inicializados como disponibles
+    const timeSlotInfo: TimeSlotInfo[] = allTimeSlots.map(time => ({
+      time,
+      isAvailable: true
+    }));
+    
+    // Marcar como no disponibles los slots que ya están reservados
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const bookedTime = data.time;
+      const slot = timeSlotInfo.find(s => s.time === bookedTime);
+      
+      if (slot) {
+        slot.isAvailable = false;
+        slot.appointmentId = doc.id;
+        slot.service = data.service;
+        // Añadir datos adicionales si son administradores
+        slot.reservedBy = data.name;
+      }
+    });
+    
+    return {
+      date,
+      timeSlots: timeSlotInfo,
+      totalSlots: allTimeSlots.length,
+      availableSlots: timeSlotInfo.filter(s => s.isAvailable).length,
+      bookedSlots: timeSlotInfo.filter(s => !s.isAvailable).length
+    };
+  } catch (error) {
+    console.error('Error al obtener horarios disponibles:', error);
+    throw error;
+  }
+};
+
+export const getDetailedMonthlyAvailability = async (
+  year: number, 
+  month: number, 
+  allTimeSlots: string[] = ["10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+) => {
+  try {
+    // Crear fecha para el primer y último día del mes
+    const startDate = new Date(year, month - 1, 1); // Mes en JS es 0-indexed
+    const endDate = new Date(year, month, 0); // Último día del mes
+    
+    // Formatear las fechas como strings YYYY-MM-DD para la consulta
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+    
+    // Consultar todas las citas del mes
+    // Nota: Esta consulta requiere un índice compuesto en Firestore.
+    // Hay dos formas de manejar esto:
+    // 1. Usar dos consultas separadas (usamos esta opción para no requerir índice)
+    // 2. Crear el índice compuesto en Firebase Console usando el link del error
+    
+    // Consulta simplificada para evitar índice compuesto
+    const q = query(
+      collection(db, 'appointments'),
+      where('date', '>=', startDateStr),
+      where('date', '<=', endDateStr)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    // Estructura para organizar las citas por fecha y hora
+    const bookingsByDate: Record<string, Record<string, {
+      appointmentId: string;
+      service: string;
+      reservedBy: string;
+    }>> = {};
+    
+    // Organizar las citas
+    querySnapshot.forEach((doc) => {
+      const data = doc.data() as Appointment;
+      // Filtramos manualmente en vez de usar el where('status', 'in', ['pending', 'confirmed'])
+      // para evitar el error de índice compuesto
+      if (data.status === 'pending' || data.status === 'confirmed') {
+        const date = data.date;
+        const time = data.time;
+        
+        if (!bookingsByDate[date]) {
+          bookingsByDate[date] = {};
+        }
+        
+        bookingsByDate[date][time] = {
+          appointmentId: doc.id,
+          service: data.service,
+          reservedBy: data.name
+        };
+      }
+    });
+    
+    // Generar disponibilidad detallada para cada día del mes
+    const availabilityDetail: Record<string, DetailedDateAvailability> = {};
+    
+    // Llenar cada día del mes
+    const daysInMonth = endDate.getDate();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const currentDate = new Date(year, month - 1, day);
+      const dateStr = currentDate.toISOString().split('T')[0];
+      
+      // Crear array de slots para este día
+      const timeSlots: TimeSlotInfo[] = allTimeSlots.map(time => {
+        const isBooked = bookingsByDate[dateStr]?.[time] !== undefined;
+        
+        return {
+          time,
+          isAvailable: !isBooked,
+          ...(isBooked && {
+            appointmentId: bookingsByDate[dateStr][time].appointmentId,
+            service: bookingsByDate[dateStr][time].service,
+            reservedBy: bookingsByDate[dateStr][time].reservedBy
+          })
+        };
+      });
+      
+      // Contar slots disponibles
+      const bookedSlots = timeSlots.filter(slot => !slot.isAvailable).length;
+      
+      availabilityDetail[dateStr] = {
+        date: dateStr,
+        totalSlots: allTimeSlots.length,
+        availableSlots: allTimeSlots.length - bookedSlots,
+        bookedSlots,
+        timeSlots
+      };
+    }
+    
+    return availabilityDetail;
+  } catch (error) {
+    console.error('Error al obtener disponibilidad detallada:', error);
+    throw error;
+  }
+};
+
+/**
  * Guarda una nueva cita en Firestore
  */
 export const saveAppointment = async (appointmentData: Omit<Appointment, 'id' | 'createdAt'>) => {

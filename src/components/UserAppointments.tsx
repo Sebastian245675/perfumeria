@@ -107,14 +107,8 @@ const UserAppointments = () => {
   if (appointments.length === 0) {
     return (
       <Card className="mt-8">
-        <CardHeader>
-          <CardTitle className="text-xl font-primary">Mis Reservas</CardTitle>
-          <CardDescription>No tienes citas reservadas actualmente.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">
-            Reserva tu primera experiencia con NUVÓ utilizando el formulario de arriba.
-          </p>
+        <CardContent className="py-8">
+          {/* Contenido vacío para mantener el espacio pero sin mostrar ningún texto */}
         </CardContent>
       </Card>
     );
@@ -122,10 +116,6 @@ const UserAppointments = () => {
 
   return (
     <Card className="mt-8">
-      <CardHeader>
-        <CardTitle className="text-xl font-primary">Mis Reservas</CardTitle>
-        <CardDescription>Administra tus citas con NUVÓ</CardDescription>
-      </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {appointments.map((appointment) => (

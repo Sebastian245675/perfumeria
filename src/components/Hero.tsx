@@ -40,52 +40,68 @@ const Hero = () => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    // Simplified animations with shorter durations
+    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
     
     tl.fromTo(
       titleRef.current,
-      { opacity: 0, y: 50 },
-      { opacity: 1, y: 0, duration: 1.2 }
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.8 }
     )
       .fromTo(
         subtitleRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1 },
-        "-=0.8"
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.6 },
+        "-=0.5"
       )
       .fromTo(
         textRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1 },
-        "-=0.8"
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.6 },
+        "-=0.5"
       )
       .fromTo(
         buttonRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8 },
-        "-=0.6"
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        "-=0.4"
       );
 
-    // Parallax effect on scroll
+    // Disable parallax on mobile devices for better performance
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) return;
+      
+    // Less intensive parallax effect
     const handleMouseMove = (e: MouseEvent) => {
       if (!containerRef.current) return;
       
       const { clientX, clientY } = e;
-      const x = (clientX / window.innerWidth - 0.5) * 20;
-      const y = (clientY / window.innerHeight - 0.5) * 20;
+      const x = (clientX / window.innerWidth - 0.5) * 10; // Reduced movement
+      const y = (clientY / window.innerHeight - 0.5) * 10; // Reduced movement
       
-      gsap.to(containerRef.current.querySelector('.bg-image'), {
-        duration: 1.5,
-        x: x,
-        y: y,
-        ease: "power2.out"
-      });
+      // Use a more efficient transform approach with throttling
+      const bgImage = containerRef.current.querySelector('.bg-image') as HTMLElement;
+      if (bgImage) {
+        bgImage.style.transform = `translate(${x}px, ${y}px)`;
+      }
+    };
+    
+    // Throttle the mousemove handler for better performance
+    let lastTime = 0;
+    const throttledMouseMove = (e: MouseEvent) => {
+      const now = Date.now();
+      if (now - lastTime > 50) { // Only update every 50ms
+        lastTime = now;
+        handleMouseMove(e);
+      }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', throttledMouseMove);
     
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      if (window.innerWidth >= 768) {
+        window.removeEventListener('mousemove', throttledMouseMove);
+      }
     };
   }, []);
 
@@ -124,25 +140,16 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-carbon-black/40 via-carbon-black/30 to-background"></div>
       </motion.div>
       
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 12 }).map((_, index) => (
-          <motion.div
+      {/* Static Particles - mobile friendly */}
+      <div className="absolute inset-0 overflow-hidden hidden md:block">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div
             key={index}
             className="absolute w-1 h-1 md:w-2 md:h-2 rounded-full bg-rose-gold/30"
-            initial={{ 
-              x: Math.random() * window.innerWidth, 
-              y: Math.random() * window.innerHeight,
-              opacity: Math.random() * 0.5 + 0.3
-            }}
-            animate={{ 
-              y: [null, Math.random() * 200 - 100 + "vh"], 
-              x: [null, Math.random() * 200 - 100 + "vw"] 
-            }}
-            transition={{ 
-              duration: Math.random() * 120 + 80, 
-              repeat: Infinity, 
-              repeatType: "reverse" 
+            style={{ 
+              left: `${20 + index * 10}%`, 
+              top: `${10 + index * 15}%`,
+              opacity: 0.3
             }}
           />
         ))}
@@ -218,21 +225,13 @@ const Hero = () => {
         </motion.div>
       </div>
       
-      {/* Scroll Indicator */}
-      <motion.div 
+      {/* Simple Static Scroll Indicator */}
+      <div 
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 text-ivory-white/80"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2, duration: 1 }}
       >
         <span className="text-xs font-secondary tracking-widest">DESLIZA</span>
-        <motion.div
-          animate={{ y: [0, 12, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <ArrowDown className="h-5 w-5" />
-        </motion.div>
-      </motion.div>
+        <ArrowDown className="h-5 w-5" />
+      </div>
     </section>
   );
 };
