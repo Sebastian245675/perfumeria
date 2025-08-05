@@ -87,16 +87,16 @@ const Products = () => {
 
   const classifications = [
     {
-      type: "Por Intensidad",
-      categories: ["Sutil", "Moderada", "Intensa"]
+      type: "Según familias olfativas",
+      categories: ["Floral", "Fougere", "Frutal", "Cítrico", "Aromático", "Amaderado", "Oriental", "Gourmand", "Chypre"]
     },
     {
-      type: "Por Momento",
-      categories: ["Día", "Noche", "Ocasión Especial"]
+      type: "Según estación del año",
+      categories: ["Primavera", "Verano", "Otoño", "Invierno"]
     },
     {
-      type: "Por Personalidad",
-      categories: ["Minimalista", "Sofisticado", "Auténtico"]
+      type: "Según intensidad",
+      categories: ["Eau Fraiche", "Eau de Cologne", "Eau de Toilette", "Eau de Parfum", "Parfum"]
     }
   ];
 
@@ -663,214 +663,66 @@ const Products = () => {
           </div>
         </div>
 
-        {/* Classifications with futuristic 3D design */}
+        {/* Classifications with simplified design */}
         <div className="mb-24 relative">
-          <ParticleEffect count={30} className="opacity-30 !absolute" />
+          {/* Eliminado ParticleEffect para mejor rendimiento */}
           
-          <div className="relative mb-20">
-            <motion.div 
-              className="absolute -top-16 left-1/2 -translate-x-1/2 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[150px]"
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.2, 0.4, 0.2],
-              }}
-              transition={{ 
-                duration: 10, 
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            />
+          <div className="mb-16">
+            <div className="w-20 h-1 bg-primary/60 mx-auto mb-6"></div>
             
-            <motion.div 
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-[3px] overflow-hidden"
-              initial={{ width: 0 }}
-              whileInView={{ width: "10rem" }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              viewport={{ once: false }}
-            >
-              <motion.div 
-                className="w-full h-full bg-gradient-to-r from-transparent via-primary to-transparent"
-                animate={{ 
-                  x: ["-100%", "100%"],
-                }}
-                transition={{ 
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              />
-            </motion.div>
+            <h3 className="font-primary text-4xl lg:text-5xl font-semibold text-center mb-4 text-primary">
+              Clasificación de Perfumes
+            </h3>
             
-            <motion.div 
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-[3px] bg-primary"
-              animate={{ 
-                opacity: [0.4, 1, 0.4],
-                width: [40, 80, 40],
-              }}
-              transition={{ 
-                duration: 4,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-            />
-            
-            <motion.h3
-              initial={{ opacity: 0, y: -30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: false }}
-              className="font-primary text-4xl lg:text-5xl font-semibold text-center mt-8 mb-4"
-            >
-              <span className="inline-block bg-clip-text text-transparent bg-gradient-to-br from-primary via-primary to-primary/70 pb-1">
-                Clasificación de Perfumes
-              </span>
-            </motion.h3>
-            
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              viewport={{ once: false }}
-              className="text-center max-w-2xl mx-auto text-muted-foreground mb-12 font-secondary"
-            >
-              Descubre el arte de la perfumería a través de nuestras cuidadosas clasificaciones, diseñadas para guiarte en un viaje sensorial único.
-            </motion.p>
+            <p className="text-center max-w-2xl mx-auto text-muted-foreground mb-10 font-secondary">
+              Descubre el arte de la perfumería a través de nuestras clasificaciones profesionales, desde las familias olfativas tradicionales hasta recomendaciones según la estación del año y la intensidad deseada.
+            </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
             {classifications.map((classification, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 60, rotateY: 20 }}
-                whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
-                transition={{ duration: 0.9, delay: index * 0.2 }}
-                viewport={{ once: false, margin: "-50px" }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                className="h-full"
               >
-                <TiltCard
-                  className="h-full"
-                  perspective={1500}
-                  tiltMaxAngleX={10}
-                  tiltMaxAngleY={15}
-                  scale={1.03}
-                  glareEnabled={true}
-                  glareMaxOpacity={0.2}
-                  glareColor={index === 0 ? "255, 123, 124" : index === 1 ? "193, 148, 151" : "169, 172, 208"}
-                >
-                  <Card className="group bg-gradient-to-br from-background/70 via-background/80 to-background/70 backdrop-blur-xl border border-white/10 overflow-hidden h-full shadow-[0_15px_30px_-8px_rgba(0,0,0,0.3)] hover:shadow-[0_25px_50px_-5px_rgba(0,0,0,0.4)] transition-all duration-700">
-                    {/* Barra decorativa superior animada */}
-                    <motion.div 
-                      className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent"
-                      initial={{ scaleX: 0, originX: 0 }}
-                      whileInView={{ scaleX: 1 }}
-                      transition={{ duration: 0.8, delay: 0.5 + index * 0.2 }}
-                      viewport={{ once: false }}
-                    />
+                <Card className="bg-gradient-to-br from-background/80 to-background/90 border border-white/10 overflow-hidden h-full shadow-md">
+                    {/* Barra decorativa superior simplificada */}
+                    <div className="h-1 bg-primary/60 w-full"></div>
                     
-                    {/* Efectos de fondo */}
-                    <div className="absolute -right-20 -top-20 w-40 h-40 rounded-full bg-primary/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                    <div className="absolute left-10 bottom-10 w-32 h-32 rounded-full bg-primary/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-200"></div>
-                    
-                    <CardContent className="p-8 lg:p-10 relative z-10">
-                      <div className="relative mb-10">
-                        <motion.div 
-                          className="absolute -inset-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-full blur-md"
-                          animate={{
-                            scale: [0.9, 1.1, 0.9],
-                            opacity: [0.3, 0.6, 0.3],
-                            rotate: [0, 360]
-                          }}
-                          transition={{
-                            duration: 8 + index * 2,
-                            repeat: Infinity,
-                            ease: "linear"
-                          }}
-                        />
-                        
-                        <motion.div 
-                          className="relative w-16 h-16 rounded-full bg-gradient-to-br from-primary/40 to-primary/10 backdrop-blur-sm flex items-center justify-center shadow-lg group-hover:shadow-primary/30 transition-all duration-700"
-                          whileHover={{
-                            scale: 1.1,
-                            transition: { type: "spring", stiffness: 300 }
-                          }}
-                        >
+                    <CardContent className="p-6 lg:p-8 relative z-10">
+                      <div className="mb-6 flex items-center">
+                        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
                           {index === 0 ? (
-                            <Droplets className="h-7 w-7 text-primary/90" />
+                            <Droplets className="h-5 w-5 text-primary" />
                           ) : index === 1 ? (
-                            <Flame className="h-7 w-7 text-primary/90" />
+                            <Flame className="h-5 w-5 text-primary" />
                           ) : (
-                            <Sparkles className="h-7 w-7 text-primary/90" />
+                            <Sparkles className="h-5 w-5 text-primary" />
                           )}
-                        </motion.div>
+                        </div>
                         
-                        <motion.h4
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.7, delay: 0.7 + index * 0.1 }}
-                          viewport={{ once: false }}
-                          className="font-primary text-2xl lg:text-3xl font-semibold text-primary group-hover:text-primary/90 transition-colors duration-500 mt-6"
-                        >
+                        <h4 className="font-primary text-xl lg:text-2xl font-semibold text-primary">
                           {classification.type}
-                          <motion.div 
-                            className="mt-1 h-px w-3/4 bg-primary/40"
-                            initial={{ scaleX: 0, originX: 0 }}
-                            whileInView={{ scaleX: 1 }}
-                            transition={{ duration: 1, delay: 0.9 + index * 0.1 }}
-                            viewport={{ once: false }}
-                          />
-                        </motion.h4>
+                        </h4>
                       </div>
                       
-                      <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-2">
                         {classification.categories.map((category, catIndex) => (
-                          <motion.div 
+                          <div 
                             key={catIndex} 
-                            className="relative overflow-hidden"
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ 
-                              duration: 0.6, 
-                              delay: 1 + (catIndex * 0.2) + (index * 0.1) 
-                            }}
-                            viewport={{ once: false }}
+                            className="font-secondary text-sm p-3 rounded-lg border border-white/5 bg-white/5 flex items-center"
                           >
-                            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            
-                            <div
-                              className="font-secondary text-sm text-foreground p-5 backdrop-blur-sm rounded-xl border border-white/10 shadow-sm relative z-10 overflow-hidden group/item"
-                            >
-                              <motion.div 
-                                className="absolute inset-0 bg-primary/10 opacity-0"
-                                initial={{ x: "-100%" }}
-                                whileHover={{ 
-                                  x: 0, 
-                                  opacity: 1,
-                                  transition: { duration: 0.3 }
-                                }}
-                              />
-                              
-                              <div className="flex items-center relative z-10">
-                                <motion.div 
-                                  className="w-4 h-4 rounded-full bg-gradient-to-br from-primary/90 to-primary/60 mr-4 shadow-[0_0_15px_rgba(215,123,124,0.6)]"
-                                  animate={{
-                                    scale: [1, 1.2, 1],
-                                    opacity: [0.7, 1, 0.7]
-                                  }}
-                                  transition={{
-                                    duration: 3,
-                                    repeat: Infinity,
-                                    repeatType: "reverse",
-                                    delay: catIndex * 0.5
-                                  }}
-                                />
-                                <span className="tracking-wide font-medium">{category}</span>
-                              </div>
-                            </div>
-                          </motion.div>
+                            <div className="w-2 h-2 rounded-full bg-primary/80 mr-2"></div>
+                            <span className="tracking-wide">{category}</span>
+                          </div>
                         ))}
                       </div>
                     </CardContent>
                   </Card>
-                </TiltCard>
               </motion.div>
             ))}
           </div>

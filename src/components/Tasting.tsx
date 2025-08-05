@@ -30,25 +30,16 @@ const Tasting = () => {
   };
   const tastingExperiences = [
     {
-      title: "Cata Íntima",
-      duration: "45 minutos",
+      title: "Cita Personalizada",
+      duration: "30 minutos",
       participants: "1-2 personas",
-      description: "Una experiencia personal para descubrir tu esencia única",
-      includes: ["3 fragancias seleccionadas", "Guía sensorial", "Notas de cata", "Muestra personalizada"]
+      description: "Nuestro equipo te acompañará en un recorrido personalizado por fragancias de autor, seleccionadas especialmente para que encuentres ese aroma que hable de ti."
     },
     {
-      title: "Cata de Pareja",
+      title: "Cita Personalizada",
       duration: "60 minutos",
-      participants: "2 personas",
-      description: "Descubran juntos aromas que complementen su conexión",
-      includes: ["5 fragancias", "Ritual compartido", "Análisis de afinidad", "Kit de muestras"]
-    },
-    {
-      title: "Cata Grupal",
-      duration: "90 minutos",
-      participants: "3-6 personas",
-      description: "Una experiencia social sofisticada para compartir",
-      includes: ["8 fragancias", "Dinámicas grupales", "Degustación especial", "Obsequios únicos"]
+      participants: "1-4 personas",
+      description: "Nuestro equipo te acompañará en un recorrido personalizado por fragancias de autor, seleccionadas especialmente para que encuentres ese aroma que hable de ti."
     }
   ];
 
@@ -58,7 +49,7 @@ const Tasting = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="font-primary text-4xl md:text-5xl font-bold text-primary mb-6">
-            Cata de Perfumes
+            Asesoramiento Personalizado
           </h2>
           <p className="font-secondary text-lg md:text-xl font-light text-muted-foreground max-w-3xl mx-auto">
             Una experiencia sensorial única para descubrir la fragancia que realmente te representa
@@ -83,9 +74,9 @@ const Tasting = () => {
         </div>
 
         {/* Tasting Experiences */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="flex flex-col md:flex-row justify-center gap-8 mb-16 max-w-4xl mx-auto">
           {tastingExperiences.map((experience, index) => (
-            <Card key={index} className="bg-background border-border hover:shadow-lg transition-all duration-300">
+            <Card key={index} className="bg-background border-border hover:shadow-lg transition-all duration-300 flex-1">
               <CardHeader>
                 <CardTitle className="font-primary text-xl font-semibold text-primary mb-4">
                   {experience.title}
@@ -108,16 +99,8 @@ const Tasting = () => {
                 <div className="mb-6">
                   <h4 className="font-secondary text-sm font-medium text-primary mb-3 flex items-center">
                     <Sparkles className="w-4 h-4 mr-2" />
-                    Incluye:
+                    Reserva sin costo
                   </h4>
-                  <ul className="space-y-1">
-                    {experience.includes.map((item, itemIndex) => (
-                      <li key={itemIndex} className="font-secondary text-xs text-foreground flex items-center">
-                        <span className="w-1.5 h-1.5 bg-primary rounded-full mr-2 flex-shrink-0"></span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
                 </div>
                 <Button 
                   variant="outline" 
@@ -129,7 +112,7 @@ const Tasting = () => {
                     }
                   }}
                 >
-                  Reservar Cata
+                  Reservar Asesoramiento
                 </Button>
               </CardContent>
             </Card>
@@ -139,7 +122,7 @@ const Tasting = () => {
         {/* Process */}
         <div className="bg-background rounded-lg p-8 mb-16">
           <h3 className="font-primary text-3xl font-semibold text-center text-primary mb-12">
-            El Proceso de Cata
+            El Proceso de Asesoramiento
           </h3>
           <div className="grid md:grid-cols-4 gap-8">
             {[
@@ -161,7 +144,7 @@ const Tasting = () => {
               {
                 step: "04",
                 title: "Selección",
-                description: "Encontramos juntos tu esencia perfecta y te llevás tu muestra"
+                description: "Encontramos juntos tu esencia perfecta"
               }
             ].map((step, index) => (
               <div key={index} className="text-center">
@@ -183,7 +166,7 @@ const Tasting = () => {
                 ¿Listo para descubrir tu esencia?
               </h3>
               <p className="font-secondary text-base font-light mb-6">
-                Reserva tu cata personalizada y vive una experiencia olfativa inolvidable
+                Reserva tu asesoramiento personalizado y vive una experiencia olfativa inolvidable
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
@@ -207,7 +190,7 @@ const Tasting = () => {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-background rounded-lg max-w-3xl w-full max-h-[90vh] overflow-auto">
               <div className="flex justify-between items-center p-4 border-b">
-                <h3 className="font-primary text-xl font-semibold">Disponibilidad de Citas</h3>
+                <h3 className="font-primary text-xl font-semibold">Disponibilidad de Asesoramiento</h3>
                 <Button variant="ghost" size="icon" onClick={() => setShowCalendar(false)}>
                   <X className="w-4 h-4" />
                 </Button>

@@ -1,6 +1,5 @@
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-perfume.jpg";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import gsap from "gsap";
@@ -124,7 +123,6 @@ const Hero = () => {
       <motion.div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat bg-image scale-110"
         style={{ 
-          backgroundImage: `url(${heroImage})`,
           opacity,
           scale,
           width: '100vw',
@@ -137,7 +135,14 @@ const Hero = () => {
           bottom: 0
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-carbon-black/40 via-carbon-black/30 to-background"></div>
+        {/* Añadimos una imagen directa además del fondo */}
+        <img 
+          src="/foto portada.png" 
+          alt="Imagen de portada NUVÓ" 
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          style={{zIndex: 1}}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-carbon-black/40 via-carbon-black/30 to-background" style={{zIndex: 2}}></div>
       </motion.div>
       
       {/* Static Particles - mobile friendly */}
