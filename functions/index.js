@@ -167,7 +167,7 @@ exports.sendAppointmentConfirmation = onDocumentCreated('appointments/{appointme
       // Enviar notificación al administrador
       const adminMailOptions = {
         from: '"NUVÓ Essence Ritual" <Nuvonicheparfum@gmail.com>',
-        to: 'juansalazat100@gmail.com',
+        to: 'Nuvonicheparfum@gmail.com',
         subject: 'Nueva solicitud de reserva - NUVÓ Essence Ritual',
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #E7DCD1; border-radius: 8px;">

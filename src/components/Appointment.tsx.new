@@ -252,7 +252,7 @@ const Appointment = () => {
             ¿Listo para descubrir tu esencia?
           </h2>
           <p className="font-secondary text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Reserva tu cata personalizada y vive una experiencia olfativa inolvidable
+            Reserva tu asesoramiento personalizado y vive una experiencia olfativa inolvidable
           </p>
         </div>
 

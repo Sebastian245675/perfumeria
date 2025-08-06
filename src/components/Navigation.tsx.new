@@ -20,7 +20,7 @@ const Navigation = () => {
     { name: "Inicio", href: "#inicio" },
     { name: "Quiénes Somos", href: "#nosotros" },
     { name: "Productos", href: "#productos" },
-    { name: "Cata", href: "#cata" },
+    { name: "Asesoramiento Personalizado", href: "#cata" },
     { name: "Testimonios", href: "#testimonios" },
     { name: "Contacto", href: "#contacto" },
     { name: "Agenda", href: "#agenda" }

@@ -209,7 +209,7 @@ const Hero = () => {
           <Button 
             variant="outline" 
             size="lg"
-            className="font-secondary text-ivory-white border-ivory-white hover:bg-ivory-white hover:text-carbon-black transition-all duration-500 hover:scale-105 group overflow-hidden relative"
+            className="font-secondary text-black border-ivory-white bg-ivory-white hover:bg-transparent hover:text-ivory-white transition-all duration-500 hover:scale-105 group overflow-hidden relative"
             style={{ 
               opacity: 1, 
               visibility: 'visible', 
@@ -223,9 +223,14 @@ const Hero = () => {
               letterSpacing: '0.5px',
               fontWeight: 500
             }}
+            onClick={() => {
+              // Scroll to the productos section
+              const nextSection = document.querySelector('#productos');
+              nextSection?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
             <span className="relative z-10">Descubrir Esencias</span>
-            <span className="absolute inset-0 bg-ivory-white w-full h-full transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
+            <span className="absolute inset-0 bg-transparent w-full h-full transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
           </Button>
         </motion.div>
       </div>

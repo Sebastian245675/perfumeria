@@ -1,0 +1,105 @@
+/* Appointment Form Visual Feedback Styles */
+
+/* Global fix for select components submitting forms */
+/* Prevent select dropdown interactions from submitting forms */
+[role="combobox"],
+[role="listbox"],
+[role="option"] {
+  user-select: none;
+}
+
+/* Stop propagation for select components */
+select,
+[role="combobox"],
+[role="listbox"],
+[role="option"] {
+  pointer-events: auto;
+}
+
+/* Add this specific fix for the appointment form */
+#reservation-form [data-submitting="true"] * {
+  pointer-events: none !important;
+}
+
+/* Error highlighting for input validation */
+.error-highlight {
+  animation: shake 0.5s linear;
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.3) !important;
+  border-color: rgba(255, 0, 0, 0.5) !important;
+}
+
+/* Form state styles */
+.submitted-form {
+  opacity: 0.8;
+  pointer-events: none;
+  position: relative;
+}
+
+.submitted-form::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: #10b981;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.error-form {
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+/* Animation keyframes */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Fix for select dropdown issues */
+[data-submitting="true"] [id^="select-trigger"] {
+  pointer-events: none !important;
+  opacity: 0.7;
+}
+
+/* Style and fix for select components */
+[role="combobox"][aria-expanded="true"] {
+  z-index: 1000 !important;
+}
+
+/* Force any popover content to have high z-index */
+[data-radix-popper-content-wrapper] {
+  z-index: 999 !important; 
+}
+
+/* Ensure focus ring doesn't trigger form actions */
+.SelectTrigger:focus, 
+[id^="select-trigger"]:focus,
+[role="combobox"]:focus {
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5) !important;
+  outline: none !important;
+}
+
+/* Custom disabled style for form elements during submission */
+form[disabled], 
+form[disabled] input, 
+form[disabled] select, 
+form[disabled] textarea, 
+form[disabled] button {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

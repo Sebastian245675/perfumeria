@@ -32,17 +32,20 @@ export function CalendarHeatmap({ onDateSelect, availabilityData, isLoading = fa
   const [date, setDate] = React.useState<Date>();
   const [month, setMonth] = React.useState<Date>(new Date());
   const [selectedTimeSlot, setSelectedTimeSlot] = React.useState<string>();
+  const [isSelecting, setIsSelecting] = React.useState(false); // Estado para indicar cuando se está seleccionando una hora
   const { toast } = useToast();
   
   // Al cambiar la fecha, notificamos al componente padre
   React.useEffect(() => {
-    // Solo notificar si tanto fecha como hora están seleccionados
-    if (date && selectedTimeSlot) {
-      onDateSelect(date, selectedTimeSlot);
-    } else if (date) {
+    // Reiniciar el estado de selección cuando cambia la fecha
+    setIsSelecting(false);
+    setSelectedTimeSlot(undefined);
+    
+    // Solo notificar si hay una fecha seleccionada
+    if (date) {
       onDateSelect(date);
     }
-  }, [date, selectedTimeSlot, onDateSelect]);
+  }, [date, onDateSelect]);
   
   // Función para determinar el color de fondo según disponibilidad
   // Basado en la proporción de slots disponibles
@@ -135,18 +138,30 @@ export function CalendarHeatmap({ onDateSelect, availabilityData, isLoading = fa
                 const dateString = format(date, "yyyy-MM-dd");
                 const isCurrentMonth = isSameMonth(date, month);
                 const isSelected = date.toDateString() === (date?.toDateString() || '');
+                const dayOfWeek = date.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6; // 0 = domingo, 6 = sábado
+                
                 const dayClassName = cn(
                   "h-9 w-9 p-0 font-normal aria-selected:opacity-100", // Estilos base
                   isSelected && "bg-primary text-primary-foreground font-bold ring-2 ring-offset-1", 
                   isToday(date) && "border border-primary",
-                  isCurrentMonth && getAvailabilityColor(date)
+                  isCurrentMonth && !isWeekend && getAvailabilityColor(date),
+                  isWeekend && "bg-gray-300 text-gray-500" // Color especial para fines de semana
                 );
                 
                 const dateAvailability = availabilityData[dateString];
                 const isFullyBooked = dateAvailability && dateAvailability.availableSlots === 0;
-                const isDateDisabled = date < addDays(new Date(), 1) || isFullyBooked;
+                const isDateDisabled = date < addDays(new Date(), 1) || isFullyBooked || isWeekend;
                 
                 const handleDateClick = () => {
+                  if (isWeekend) {
+                    toast({
+                      title: "No disponible",
+                      description: "No ofrecemos visitas los fines de semana. Por favor, selecciona un día entre lunes y viernes.",
+                      variant: "destructive"
+                    });
+                    return;
+                  }
                   if (isFullyBooked) {
                     toast({
                       title: "Fecha no disponible",
@@ -198,18 +213,33 @@ export function CalendarHeatmap({ onDateSelect, availabilityData, isLoading = fa
                 <div className="w-3 h-3 mr-1 rounded bg-destructive/70"></div>
                 <span>Sin horarios</span>
               </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 mr-1 rounded bg-gray-300"></div>
+                <span>Fin de semana</span>
+              </div>
             </div>
           </div>
         </PopoverContent>
       </Popover>
       
       {date && (
-        <Card className="overflow-hidden border-2 border-muted">
+        <Card className="overflow-hidden border-2 border-muted relative">
           <CardContent className="p-4 bg-gradient-to-br from-background to-muted/30">
             <h3 className="text-sm font-medium mb-3 flex items-center">
               <Clock className="mr-2 h-4 w-4 text-primary" />
               Horarios para {format(date, "EEEE d 'de' MMMM", { locale: es })}
             </h3>
+            
+            {/* Overlay de carga cuando se selecciona una hora */}
+            {isSelecting && (
+              <div className="absolute inset-0 bg-background/90 flex items-center justify-center z-10 transition-opacity animate-in fade-in duration-300">
+                <div className="text-center px-6 py-4 rounded-lg bg-muted/30 shadow-lg border border-border">
+                  <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                  <p className="text-sm font-medium text-primary">Preparando tu visita...</p>
+                  <p className="text-xs text-muted-foreground mt-1">Un momento, por favor</p>
+                </div>
+              </div>
+            )}
             
             {isLoading ? (
               <div className="space-y-2">
@@ -233,8 +263,35 @@ export function CalendarHeatmap({ onDateSelect, availabilityData, isLoading = fa
                             });
                             return;
                           }
+                          
+                          // Activamos el estado de selección/carga
+                          setIsSelecting(true);
                           setSelectedTimeSlot(slot.time);
-                          onDateSelect(date, slot.time);
+                          
+                          // Almacenamos la selección en sessionStorage para que esté disponible
+                          // para el formulario de reserva independientemente del flujo
+                          const dateString = format(date, "yyyy-MM-dd");
+                          const formattedDateString = format(date, "EEEE d 'de' MMMM", { locale: es });
+                          
+                          // Guardar en sessionStorage
+                          sessionStorage.setItem('selectedDate', dateString);
+                          sessionStorage.setItem('selectedTime', slot.time);
+                          sessionStorage.setItem('formattedDate', formattedDateString);
+                          
+                          // Añadimos un pequeño retraso para mostrar una animación de selección
+                          setTimeout(() => {
+                            // Notificamos al componente padre con la fecha y hora seleccionada
+                            onDateSelect(date, slot.time);
+                            
+                            // Extendemos un poco la animación para dar la impresión de procesamiento
+                            setTimeout(() => {
+                              // Después de un breve periodo, enviamos una señal al componente padre
+                              document.dispatchEvent(new CustomEvent('calendar:selectionComplete', {
+                                detail: { date, time: slot.time }
+                              }));
+                            }, 300); // Tiempo más corto para una transición más rápida
+                            
+                          }, 500); // Reducido el tiempo de retraso para hacerlo más fluido
                         };
                         
                         return (
@@ -244,10 +301,11 @@ export function CalendarHeatmap({ onDateSelect, availabilityData, isLoading = fa
                             size="sm"
                             className={cn(
                               "w-full justify-center relative transition-all",
-                              selectedTimeSlot === slot.time ? "bg-primary text-primary-foreground shadow-md scale-105" : "",
+                              selectedTimeSlot === slot.time ? "bg-primary text-primary-foreground shadow-md scale-105 animate-pulse" : "",
                               !slot.isAvailable ? "bg-muted/50 text-muted-foreground" : "hover:bg-primary/20"
                             )}
                             onClick={handleTimeClick}
+                            disabled={isSelecting} // Desactivamos los botones mientras está en proceso de selección
                           >
                             <Clock className="mr-1.5 h-3.5 w-3.5" />
                             {slot.time}

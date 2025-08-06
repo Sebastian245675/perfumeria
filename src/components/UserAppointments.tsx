@@ -86,9 +86,9 @@ const UserAppointments = () => {
   
   const getServiceName = (serviceValue: string) => {
     const services = {
-      "cata-intima": "Cata Íntima",
-      "cata-pareja": "Cata de Pareja",
-      "cata-grupal": "Cata Grupal",
+      "cata-intima": "Asesoramiento Íntimo",
+      "cata-pareja": "Asesoramiento de Pareja",
+      "cata-grupal": "Asesoramiento Grupal",
       "consulta-productos": "Consulta de Productos",
       "compra-perfumes": "Compra Personalizada"
     };

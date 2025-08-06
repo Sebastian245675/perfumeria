@@ -19,9 +19,11 @@ const Footer = () => {
               Resignificando el perfume como una experiencia íntima, artística y atemporal.
             </p>
             <div className="flex space-x-4">
-              <Button variant="outline" size="sm" className="p-2 border-elegant-foreground/20 hover:bg-elegant-foreground/10">
-                <Instagram className="w-4 h-4" />
-              </Button>
+              <a href="https://www.instagram.com/nuvoparfumiere/profilecard/?igsh=ZGw2NjVkd2h2djRq" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" size="sm" className="p-2 border-elegant-foreground/20 hover:bg-elegant-foreground/10">
+                  <Instagram className="w-4 h-4" />
+                </Button>
+              </a>
               <Button variant="outline" size="sm" className="p-2 border-elegant-foreground/20 hover:bg-elegant-foreground/10">
                 <Facebook className="w-4 h-4" />
               </Button>
@@ -38,7 +40,7 @@ const Footer = () => {
               {[
                 { name: "Quiénes Somos", href: "/nosotros" },
                 { name: "Productos", href: "#productos" },
-                { name: "Cata de Perfumes", href: "#cata" },
+                { name: "Asesoramiento Personalizado", href: "#cata" },
                 { name: "Testimonios", href: "#testimonios" }
               ].map((link) => (
                 <li key={link.name}>
@@ -76,9 +78,9 @@ const Footer = () => {
             <h4 className="font-primary text-lg font-semibold mb-4">Servicios</h4>
             <ul className="space-y-2">
               {[
-                "Cata Íntima",
-                "Cata de Pareja", 
-                "Cata Grupal",
+                "Asesoramiento Íntimo",
+                "Asesoramiento de Pareja", 
+                "Asesoramiento Grupal",
                 "Consulta Personalizada",
                 "Agenda tu Cita"
               ].map((service) => (
@@ -101,7 +103,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center">
                 <Phone className="w-4 h-4 mr-2 opacity-70" />
-                <span className="font-secondary text-sm">+54 11 1234-5678</span>
+                <span className="font-secondary text-sm">+54 387 221-8029</span>
               </div>
               <div className="flex items-center">
                 <MapPin className="w-4 h-4 mr-2 opacity-70" />

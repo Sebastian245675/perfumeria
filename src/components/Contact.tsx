@@ -78,28 +78,28 @@ const Contact = () => {
 
   const contactInfo = [
     {
-      icon: Mail,
-      title: "Email",
-      content: "Nuvonicheparfum@gmail.com",
-      description: "Respuesta en 24 horas",
-      gradient: "from-rose-400 to-amber-400",
-      action: "Enviar email",
-      link: "mailto:Nuvonicheparfum@gmail.com"
+      icon: Instagram,
+      title: "Instagram",
+      content: "@nuvoparfumiere",
+      description: "Síguenos para novedades",
+      gradient: "from-pink-400 to-purple-400",
+      action: "Ver perfil",
+      link: "https://www.instagram.com/nuvoparfumiere/"
     },
     {
       icon: Phone,
-      title: "Teléfono",
-      content: "+54 11 1234-5678",
-      description: "Lunes a Viernes 10-18hs",
+      title: "WhatsApp",
+      content: "+54 387 221-8029",
+      description: "De 9.30 a 13 y de 15 a 21",
       gradient: "from-violet-400 to-indigo-500",
-      action: "Llamar ahora",
-      link: "tel:+541112345678"
+      action: "Enviar mensaje",
+      link: "https://wa.me/5493872218029"
     },
     {
       icon: MapPin,
       title: "Ubicación",
       content: "Avenida san Martín 3430, Vaqueros",
-      description: "Citas con previa reserva",
+      description: "Visitas con previa reserva",
       gradient: "from-teal-400 to-emerald-500",
       action: "Ver en mapa",
       link: "https://maps.app.goo.gl/S45kEwLyta7EFFSp8"
@@ -107,7 +107,7 @@ const Contact = () => {
     {
       icon: Clock,
       title: "Horarios",
-      content: "10:00 - 19:00",
+      content: "9:30 - 13:00 y 15:00 - 21:00",
       description: "De Lunes a Sábados",
       gradient: "from-amber-400 to-orange-500",
       action: "Ver calendario",
@@ -119,7 +119,7 @@ const Contact = () => {
     {
       name: "Instagram",
       icon: Instagram,
-      link: "https://instagram.com/nuvo",
+      link: "https://www.instagram.com/nuvoparfumiere/profilecard/?igsh=ZGw2NjVkd2h2djRq",
       color: "hover:text-pink-500"
     },
     {

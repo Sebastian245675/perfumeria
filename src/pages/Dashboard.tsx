@@ -99,7 +99,7 @@ const Dashboard = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="font-primary text-2xl">Mis Reservas</CardTitle>
-                  <CardDescription>Gestiona tus citas con NUVÓ</CardDescription>
+                  <CardDescription>Gestiona tus visitas con NUVÓ</CardDescription>
                 </CardHeader>
               </Card>
               <div className="mt-6">

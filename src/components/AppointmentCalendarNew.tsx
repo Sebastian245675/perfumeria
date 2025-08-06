@@ -3,8 +3,7 @@ import { format, getYear, getMonth } from "date-fns";
 import { es } from "date-fns/locale";
 import { CalendarHeatmap } from "@/components/ui/calendar-heatmap";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -32,14 +31,34 @@ export function AppointmentCalendarNew({
   const [selectedTimeSlot, setSelectedTimeSlot] = React.useState<string>();
   const [isLoading, setIsLoading] = React.useState(true);
   const [availabilityData, setAvailabilityData] = React.useState<Record<string, DetailedDateAvailability>>({});
-  const [activeTab, setActiveTab] = React.useState("calendario");
   
   const { toast } = useToast();
 
   // Cargar la disponibilidad del mes actual al montar el componente
   React.useEffect(() => {
     loadMonthlyAvailability(new Date());
-  }, []);
+    
+    // Escuchar el evento personalizado que indica que la selección está completa
+    const handleSelectionComplete = (event: CustomEvent) => {
+      const { date, time } = event.detail;
+      // Cuando se completa la selección en el calendario, llamar a la función
+      // para mostrar el formulario con una transición suave
+      if (date && time && onViewAppointmentForm) {
+        setTimeout(() => {
+          onViewAppointmentForm();
+          if (isDialog) {
+            setIsOpen(false);
+          }
+        }, 300); // Un pequeño retraso para que sea más fluido
+      }
+    };
+    
+    // Añadir y limpiar el listener
+    document.addEventListener('calendar:selectionComplete', handleSelectionComplete as EventListener);
+    return () => {
+      document.removeEventListener('calendar:selectionComplete', handleSelectionComplete as EventListener);
+    };
+  }, [onViewAppointmentForm, isDialog]);
 
   // Cargar la disponibilidad para un mes específico
   const loadMonthlyAvailability = async (date: Date) => {
@@ -67,14 +86,65 @@ export function AppointmentCalendarNew({
     setSelectedDate(date);
     if (timeSlot) {
       setSelectedTimeSlot(timeSlot);
-      onSelectDateTime?.(date, timeSlot); // Notificar al componente padre
+      onSelectDateTime?.(date, timeSlot); // Notificar al componente padre PRIMERO
+      
+      // La idea es prevenir completamente que el usuario vea el scroll
+      if (date && timeSlot) {
+        // Inmediatamente hacemos visible una pantalla de carga a pantalla completa
+        // antes de cualquier acción de scroll
+        const overlayDiv = document.createElement('div');
+        overlayDiv.id = 'transition-overlay'; // Añadimos un ID para facilitar su referencia
+        overlayDiv.className = 'fixed inset-0 bg-background z-[9999] transition-opacity duration-500 flex items-center justify-center';
+        overlayDiv.style.opacity = '0';
+        overlayDiv.innerHTML = `
+          <div class="text-center px-8 py-10">
+            <div class="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <h3 class="font-primary text-2xl font-semibold mt-6">Preparando tu visita...</h3>
+          </div>
+        `;
+        document.body.appendChild(overlayDiv);
+        
+        // Forzamos un reflow para que la animación funcione
+        overlayDiv.getBoundingClientRect();
+        overlayDiv.style.opacity = '1';
+        
+        // Después de un breve momento, notificamos la selección completa
+        setTimeout(() => {
+          // Cerramos el diálogo si estamos en modo diálogo
+          if (isDialog) {
+            setIsOpen(false);
+          }
+          
+          // Notificamos al componente principal para preparar el formulario
+          document.dispatchEvent(new CustomEvent('calendar:selectionComplete', {
+            detail: { date, time: timeSlot }
+          }));
+          
+          // Establecemos un temporizador de seguridad para asegurarnos de que el overlay desaparezca
+          // incluso si algo sale mal en el componente padre
+          setTimeout(() => {
+            const overlay = document.getElementById('transition-overlay');
+            if (overlay) {
+              overlay.style.opacity = '0';
+              setTimeout(() => {
+                if (overlay.parentNode) {
+                  overlay.parentNode.removeChild(overlay);
+                }
+              }, 500); // Tiempo para la transición de desvanecimiento
+            }
+          }, 2500); // Tiempo máximo que puede estar visible el overlay
+          
+          // Guardamos el ID para que el componente padre pueda encontrarlo y eliminarlo antes si es necesario
+          sessionStorage.setItem('transition-overlay-id', 'transition-overlay');
+        }, 800);
+      }
     } else {
       setSelectedTimeSlot(undefined);
       onSelectDateTime?.(date);
     }
   };
   
-  // Continuar al formulario de reserva
+  // Función simplificada para continuar al formulario de reserva
   const handleContinue = () => {
     if (selectedDate && selectedTimeSlot) {
       onViewAppointmentForm?.();
@@ -94,69 +164,26 @@ export function AppointmentCalendarNew({
   const calendarContent = (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-2xl">Reserva tu cata personalizada</CardTitle>
-        <CardDescription>Selecciona una fecha y horario disponible para tu experiencia olfativa.</CardDescription>
+        <CardTitle className="text-2xl">Selecciona fecha y hora para tu visita</CardTitle>
+        <CardDescription>Elige una fecha y horario disponible para tu experiencia olfativa.</CardDescription>
       </CardHeader>
       
-      <Tabs defaultValue="calendario" value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="calendario">Calendario</TabsTrigger>
-          <TabsTrigger value="detalles">Detalles</TabsTrigger>
-        </TabsList>
+      <div className="space-y-4 p-4">
+        <CalendarHeatmap
+          onDateSelect={handleDateTimeSelect}
+          availabilityData={availabilityData}
+          isLoading={isLoading}
+        />
         
-        <TabsContent value="calendario" className="space-y-4 p-4">
-          <CalendarHeatmap
-            onDateSelect={handleDateTimeSelect}
-            availabilityData={availabilityData}
-            isLoading={isLoading}
-          />
-        </TabsContent>
-        
-        <TabsContent value="detalles" className="space-y-4 p-4">
-          {selectedDate && selectedTimeSlot ? (
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-medium">Fecha seleccionada:</p>
-                <p className="text-lg">{format(selectedDate, "PPP", { locale: es })}</p>
-              </div>
-              
-              <div>
-                <p className="text-sm font-medium">Hora seleccionada:</p>
-                <p className="text-lg">{selectedTimeSlot}</p>
-              </div>
-              
-              <div className="rounded-lg bg-muted p-4">
-                <p className="text-sm font-medium mb-2">Sobre tu cita:</p>
-                <ul className="text-sm space-y-2">
-                  <li>• Duración aproximada: 45 minutos</li>
-                  <li>• Ubicación: Estudio NUVÓ, centro histórico</li>
-                  <li>• Puedes traer hasta 3 acompañantes</li>
-                  <li>• Te recomendamos venir sin perfume previo</li>
-                </ul>
-              </div>
+        {selectedDate && selectedTimeSlot && (
+          <div className="mt-4 py-3 px-4 border-t border-border flex items-center justify-between">
+            <div className="text-sm">
+              <span className="font-medium">Seleccionado: </span>
+              <span>{format(selectedDate, "EEEE d 'de' MMMM", { locale: es })} a las {selectedTimeSlot}</span>
             </div>
-          ) : (
-            <div className="flex items-center justify-center h-48 flex-col space-y-4">
-              <p className="text-muted-foreground">No has seleccionado fecha y hora</p>
-              <Button variant="outline" onClick={() => setActiveTab("calendario")}>
-                Seleccionar fecha y hora
-              </Button>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
-      
-      <CardFooter className="flex justify-between pt-4 border-t">
-        <Button variant="ghost" onClick={() => setActiveTab("calendario")}>
-          Regresar al Calendario
-        </Button>
-        <Button 
-          onClick={handleContinue} 
-          disabled={!selectedDate || !selectedTimeSlot}
-        >
-          Continuar con Reserva
-        </Button>
-      </CardFooter>
+          </div>
+        )}
+      </div>
     </Card>
   );
 
@@ -171,7 +198,7 @@ export function AppointmentCalendarNew({
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
-              <DialogTitle>Disponibilidad de Citas</DialogTitle>
+              <DialogTitle>Selecciona fecha y hora para tu visita</DialogTitle>
             </DialogHeader>
             {calendarContent}
           </DialogContent>

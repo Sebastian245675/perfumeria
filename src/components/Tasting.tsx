@@ -177,9 +177,6 @@ const Tasting = () => {
                   <Calendar className="w-4 h-4 mr-2" />
                   Ver Disponibilidad
                 </Button>
-                <Button variant="outline" className="font-secondary border-elegant-foreground text-elegant-foreground hover:bg-elegant-foreground hover:text-elegant">
-                  Más Información
-                </Button>
               </div>
             </CardContent>
           </Card>

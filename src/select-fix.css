@@ -1,0 +1,21 @@
+/* Global fix for select components submitting forms */
+
+/* Prevent select dropdown interactions from submitting forms */
+[role="combobox"],
+[role="listbox"],
+[role="option"] {
+  user-select: none;
+}
+
+/* Stop propagation for select components */
+select,
+[role="combobox"],
+[role="listbox"],
+[role="option"] {
+  pointer-events: auto;
+}
+
+/* Add this specific fix for the appointment form */
+#reservation-form [data-submitting="true"] * {
+  pointer-events: none !important;
+}

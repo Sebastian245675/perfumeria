@@ -148,7 +148,7 @@ export interface DetailedDateAvailability {
  */
 export const getAvailableTimeSlotsForDate = async (
   date: string, 
-  allTimeSlots: string[] = ["10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+  allTimeSlots: string[] = ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"]
 ) => {
   try {
     const q = query(
@@ -196,7 +196,7 @@ export const getAvailableTimeSlotsForDate = async (
 export const getDetailedMonthlyAvailability = async (
   year: number, 
   month: number, 
-  allTimeSlots: string[] = ["10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+  allTimeSlots: string[] = ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", "20:00", "20:30"]
 ) => {
   try {
     // Crear fecha para el primer y último día del mes
@@ -259,8 +259,22 @@ export const getDetailedMonthlyAvailability = async (
       const currentDate = new Date(year, month - 1, day);
       const dateStr = currentDate.toISOString().split('T')[0];
       
+      // Verificar si es fin de semana (0 = domingo, 6 = sábado)
+      const dayOfWeek = currentDate.getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      
       // Crear array de slots para este día
       const timeSlots: TimeSlotInfo[] = allTimeSlots.map(time => {
+        // Si es fin de semana, marcar como no disponible
+        if (isWeekend) {
+          return {
+            time,
+            isAvailable: false,
+            // Usamos un código especial para indicar que es por cierre, no por reserva
+            appointmentId: 'weekend-closure'
+          };
+        }
+        
         const isBooked = bookingsByDate[dateStr]?.[time] !== undefined;
         
         return {

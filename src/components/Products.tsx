@@ -8,6 +8,7 @@ import gsap from "@/lib/gsap-config";
 import { useMouse, useParallaxEffect, useScrollInfo } from "@/hooks/use-mouse";
 import TiltCard from "@/components/TiltCard";
 import ParticleEffect from "@/components/ParticleEffect";
+import OlfactoryFamilies from "@/components/OlfactoryFamilies";
 
 const Products = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -53,35 +54,27 @@ const Products = () => {
   const imageSlides = [
     {
       image: "/fondoproducto.jpg",
-      title: "Colección Esencia",
-      description: "Fragancias que capturan la esencia del lujo minimalista",
+      title: "Lorenzo Pazzaglia",
+      description: "El maestro italiano fusiona audacia y elegancia: materias primas gourmand, acordes marinos y maderas exóticas se convierten en piezas de alta perfumería que despiertan los sentidos y evocan paisajes mediterráneos con un toque irreverente.",
       color: "#D77B7C",
       icon: <Droplets className="h-5 w-5 mr-2" />,
-      notes: ["Ámbar", "Madera de Oud", "Vetiver"]
+      notes: ["Gourmand", "Acordes Marinos", "Maderas Exóticas"]
     },
     {
       image: "/segundoproducto.jpg",
-      title: "Colección Ritual",
-      description: "Una experiencia sensorial que trasciende lo ordinario",
+      title: "Ramón Monegal",
+      description: "Herencia perfumista de Barcelona desde 1916. Cada fragancia es una narrativa íntima que combina arte, literatura y la impecable técnica artesanal de la familia Monegal, revelando lujo silencioso y sofisticación atemporal.",
       color: "#9D7B8C",
       icon: <Flame className="h-5 w-5 mr-2" />,
-      notes: ["Pachulí", "Cuero", "Sándalo"]
+      notes: ["Arte", "Literatura", "Artesanía"]
     },
     {
       image: "/fondo1.jpg",
-      title: "Colección Éclat",
-      description: "El brillo fugaz de un recuerdo atrapado en una fragancia",
+      title: "Xerjoff",
+      description: "Desde Turín, la casa italiana eleva la perfumería a un arte suntuoso. Ingredientes raros y presentaciones opulentas se funden en composiciones ricas y envolventes, donde la tradición artesanal se encuentra con la innovación para ofrecer experiencias olfativas de lujo absoluto.",
       color: "#B8A88A",
       icon: <Sparkles className="h-5 w-5 mr-2" />,
-      notes: ["Bergamota", "Cedro", "Jazmín"]
-    },
-    {
-      image: "/fondo2.jpg",
-      title: "Colección Aura",
-      description: "La presencia sutil pero imborrable de tu esencia personal",
-      color: "#7B928C",
-      icon: <Wind className="h-5 w-5 mr-2" />,
-      notes: ["Pimienta Rosa", "Iris", "Almizcle"]
+      notes: ["Ingredientes Raros", "Tradición", "Innovación"]
     }
   ];
 
@@ -294,7 +287,7 @@ const Products = () => {
               transition={{ delay: 0.8 }}
             >
               <Sparkles className="h-4 w-4 text-primary/80" />
-              <span className="text-sm uppercase tracking-widest text-primary/70 font-secondary">Creaciones de autor</span>
+              <span className="text-sm uppercase tracking-widest text-primary/70 font-secondary">Maestros perfumistas</span>
               <Sparkles className="h-4 w-4 text-primary/80" />
             </motion.div>
           </motion.div>
@@ -710,17 +703,23 @@ const Products = () => {
                         </h4>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-2">
-                        {classification.categories.map((category, catIndex) => (
-                          <div 
-                            key={catIndex} 
-                            className="font-secondary text-sm p-3 rounded-lg border border-white/5 bg-white/5 flex items-center"
-                          >
-                            <div className="w-2 h-2 rounded-full bg-primary/80 mr-2"></div>
-                            <span className="tracking-wide">{category}</span>
-                          </div>
-                        ))}
-                      </div>
+                      {index === 0 ? (
+                        <div className="py-4">
+                          <OlfactoryFamilies />
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-2">
+                          {classification.categories.map((category, catIndex) => (
+                            <div 
+                              key={catIndex} 
+                              className="font-secondary text-sm p-3 rounded-lg border border-white/5 bg-white/5 flex items-center"
+                            >
+                              <div className="w-2 h-2 rounded-full bg-primary/80 mr-2"></div>
+                              <span className="tracking-wide">{category}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
               </motion.div>

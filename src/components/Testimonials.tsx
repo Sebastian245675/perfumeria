@@ -45,7 +45,7 @@ const Testimonials = () => {
     },
     {
       name: "Alejandro R.",
-      comment: "La cata fue una experiencia increíble. Nunca pensé que un perfume pudiera evocar tantos recuerdos y emociones. El proceso me permitió conectar con mis sensaciones más auténticas, y ahora cada vez que uso mi esencia, revivo esa conexión.",
+      comment: "El asesoramiento fue una experiencia increíble. Nunca pensé que un perfume pudiera evocar tantos recuerdos y emociones. El proceso me permitió conectar con mis sensaciones más auténticas, y ahora cada vez que uso mi esencia, revivo esa conexión.",
       rating: 5,
       fragrance: "Elegancia Atemporal",
       profession: "Arquitecto"
@@ -647,7 +647,7 @@ const Testimonials = () => {
           {/* Note */}
           <div className="text-center mt-6">
             <p className="font-secondary text-xs text-muted-foreground">
-              * Los testimonios son revisados antes de ser publicados para mantener la calidad de la experiencia
+            
             </p>
           </div>
         </motion.div>
