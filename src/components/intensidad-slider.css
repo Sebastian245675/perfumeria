@@ -1,0 +1,48 @@
+/* intensidad-slider.css - Mejoras específicas para el slider de intensidad */
+
+/* Estilo para el slider en dispositivos móviles */
+.mobile-device .slider-container {
+  margin: 20px 0 !important;
+  padding: 10px 0 !important;
+}
+
+/* Mejorar el aspecto del slider */
+.mobile-device [role="slider"] {
+  width: 24px !important;
+  height: 24px !important;
+  background-color: white !important;
+  border: 2px solid #9c6644 !important; /* Color principal */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Mejorar la pista del slider */
+.mobile-device [role="slider"] + [data-orientation="horizontal"] {
+  height: 8px !important;
+  background-color: #e9e9e9 !important;
+}
+
+/* Mejorar la parte activa del slider */
+.mobile-device [data-orientation="horizontal"] div:first-child {
+  background-color: #9c6644 !important; /* Color principal */
+  height: 8px !important;
+}
+
+/* Indicador numérico con mejor contraste */
+.mobile-device .intensidad-indicator {
+  font-size: 16px !important;
+  font-weight: bold !important;
+  background-color: #9c6644 !important;
+  color: white !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  margin-left: 8px !important;
+  font-feature-settings: "tnum" !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* Mejorar etiquetas */
+.mobile-device .slider-label {
+  font-weight: 500 !important;
+  margin-bottom: 12px !important;
+  font-size: 16px !important;
+}

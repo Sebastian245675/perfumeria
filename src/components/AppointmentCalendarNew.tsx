@@ -13,6 +13,9 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar, Clock } from "lucide-react";
 
+// Importar correcciones CSS para transiciones
+import "./calendar-transition-fix.css";
+
 interface AppointmentCalendarNewProps {
   onSelectDateTime?: (date: Date | undefined, timeSlot?: string) => void;
   onViewAppointmentForm?: () => void;
@@ -88,24 +91,54 @@ export function AppointmentCalendarNew({
       setSelectedTimeSlot(timeSlot);
       onSelectDateTime?.(date, timeSlot); // Notificar al componente padre PRIMERO
       
-      // La idea es prevenir completamente que el usuario vea el scroll
+      // Guardamos la selección en sessionStorage para asegurarnos de que persiste
+      // incluso si la transición falla
       if (date && timeSlot) {
-        // Inmediatamente hacemos visible una pantalla de carga a pantalla completa
-        // antes de cualquier acción de scroll
+        sessionStorage.setItem('selected-date', date.toISOString());
+        sessionStorage.setItem('selected-time', timeSlot);
+        
+        // Eliminamos cualquier overlay anterior que pudiera existir
+        const existingOverlay = document.getElementById('transition-overlay');
+        if (existingOverlay && existingOverlay.parentNode) {
+          existingOverlay.parentNode.removeChild(existingOverlay);
+        }
+        
+        // Crear el overlay de transición como elemento independiente del DOM
         const overlayDiv = document.createElement('div');
-        overlayDiv.id = 'transition-overlay'; // Añadimos un ID para facilitar su referencia
-        overlayDiv.className = 'fixed inset-0 bg-background z-[9999] transition-opacity duration-500 flex items-center justify-center';
-        overlayDiv.style.opacity = '0';
+        overlayDiv.id = 'transition-overlay';
+        overlayDiv.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: white;
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0;
+          transition: opacity 0.5s ease;
+          pointer-events: all;
+        `;
+        
         overlayDiv.innerHTML = `
           <div class="text-center px-8 py-10">
             <div class="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
             <h3 class="font-primary text-2xl font-semibold mt-6">Preparando tu visita...</h3>
           </div>
         `;
+        
+        // Añadimos el overlay al body
         document.body.appendChild(overlayDiv);
         
-        // Forzamos un reflow para que la animación funcione
-        overlayDiv.getBoundingClientRect();
+        // Añadimos la clase para prevenir scroll visible
+        document.body.classList.add('invisible-scroll');
+        
+        // Forzamos un reflow para que la animación funcione correctamente
+        void overlayDiv.offsetWidth;
+        
+        // Hacemos visible el overlay
         overlayDiv.style.opacity = '1';
         
         // Después de un breve momento, notificamos la selección completa
@@ -130,6 +163,8 @@ export function AppointmentCalendarNew({
                 if (overlay.parentNode) {
                   overlay.parentNode.removeChild(overlay);
                 }
+                // Restaurar scroll normal
+                document.body.classList.remove('invisible-scroll');
               }, 500); // Tiempo para la transición de desvanecimiento
             }
           }, 2500); // Tiempo máximo que puede estar visible el overlay
@@ -144,13 +179,60 @@ export function AppointmentCalendarNew({
     }
   };
   
-  // Función simplificada para continuar al formulario de reserva
+  // Función mejorada para continuar al formulario de reserva
   const handleContinue = () => {
     if (selectedDate && selectedTimeSlot) {
-      onViewAppointmentForm?.();
-      if (isDialog) {
-        setIsOpen(false);
-      }
+      // Guardar en sessionStorage para asegurar persistencia
+      sessionStorage.setItem('selected-date', selectedDate.toISOString());
+      sessionStorage.setItem('selected-time', selectedTimeSlot);
+      
+      // Crear overlay de transición para evitar problemas visuales durante la navegación
+      const overlayDiv = document.createElement('div');
+      overlayDiv.id = 'transition-overlay';
+      overlayDiv.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: white;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        pointer-events: all;
+      `;
+      
+      overlayDiv.innerHTML = `
+        <div class="text-center px-8 py-10">
+          <div class="w-20 h-20 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <h3 class="font-primary text-2xl font-semibold mt-6">Preparando tu visita...</h3>
+        </div>
+      `;
+      
+      document.body.appendChild(overlayDiv);
+      document.body.classList.add('invisible-scroll');
+      
+      // Forzar reflow
+      void overlayDiv.offsetWidth;
+      overlayDiv.style.opacity = '1';
+      
+      // Breve tiempo para asegurar que la animación es visible
+      setTimeout(() => {
+        // Despachar el evento para notificar la selección completa
+        document.dispatchEvent(new CustomEvent('calendar:selectionComplete', {
+          detail: { date: selectedDate, time: selectedTimeSlot }
+        }));
+        
+        // Continuar al formulario
+        onViewAppointmentForm?.();
+        
+        if (isDialog) {
+          setIsOpen(false);
+        }
+      }, 500);
     } else {
       toast({
         title: "Selección incompleta",
@@ -176,11 +258,19 @@ export function AppointmentCalendarNew({
         />
         
         {selectedDate && selectedTimeSlot && (
-          <div className="mt-4 py-3 px-4 border-t border-border flex items-center justify-between">
-            <div className="text-sm">
+          <div className="mt-4 py-3 px-4 border-t border-border flex flex-col sm:flex-row items-center justify-between">
+            <div className="text-sm mb-3 sm:mb-0">
               <span className="font-medium">Seleccionado: </span>
               <span>{format(selectedDate, "EEEE d 'de' MMMM", { locale: es })} a las {selectedTimeSlot}</span>
             </div>
+            <Button 
+              onClick={handleContinue} 
+              className="w-full sm:w-auto" 
+              size="lg"
+            >
+              Continuar
+              <span className="ml-2">→</span>
+            </Button>
           </div>
         )}
       </div>

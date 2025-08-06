@@ -1,0 +1,75 @@
+/* Mejoras para la transición del calendario al formulario */
+
+/* Asegurar que no haya problemas de scroll durante la transición */
+.invisible-scroll {
+  overflow: hidden !important;
+  height: 100% !important;
+  width: 100% !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+/* Asegurar que el overlay se muestre correctamente */
+#transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  z-index: 9999;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Correcciones específicas para navegadores basados en Webkit (Chrome, Safari) */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  /* Fix para Chrome */
+  [data-state="open"] {
+    position: relative !important;
+    z-index: 9999 !important;
+  }
+  
+  /* Mejorar rendimiento de las transiciones en Chrome */
+  #transition-overlay,
+  .invisible-scroll #reservation-form,
+  [data-radix-popper-content-wrapper] {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+  
+  /* Asegurar que los selectores funcionen en Chrome */
+  #service-trigger,
+  #time-trigger,
+  #participants-trigger {
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+    -webkit-touch-callout: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+  
+  /* Mejorar la experiencia de touch en Chrome Android */
+  [role="option"] {
+    touch-action: pan-y !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  
+  /* Evitar que el navegador haga zoom en inputs en Chrome para iOS */
+  input, select, textarea, button, [role="combobox"], [role="button"] {
+    font-size: 16px !important;
+  }
+}
+
+/* Fix para dispositivos móviles */
+@media (max-width: 768px) {
+  /* Hacer que el botón de continuar sea más grande y fácil de tocar */
+  .calendar-continue-button {
+    min-height: 48px !important;
+    font-size: 16px !important;
+  }
+}

@@ -1,0 +1,101 @@
+/* Correcciones específicas para móviles para los selectores */
+[role="combobox"],
+[role="listbox"],
+[role="option"] {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Asegúrate de que los selectores tengan el z-index correcto */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+  position: fixed !important; /* Garantiza que se muestre por encima de todo */
+}
+
+/* Asegura que el contenido del dropdown sea visible y utilizable */
+.mobile-dropdown-fix {
+  background-color: white !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix para asegurar que los dropdowns sean interactivos */
+#service-trigger,
+#time-trigger,
+#participants-trigger {
+  cursor: pointer !important;
+}
+
+/* Mejor area táctil en móviles */
+@media (max-width: 768px) {
+  /* Aumentar área táctil en móviles */
+  [role="option"] {
+    min-height: 44px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+    font-size: 16px !important; /* Tamaño mínimo para evitar zoom en iOS */
+  }
+  
+  /* Mejor posicionamiento para móviles - centrado y con tamaño apropiado */
+  [data-radix-popper-content-wrapper] {
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 320px !important;
+    margin: 0 !important;
+  }
+  
+  /* Asegura que se pueda hacer scroll en el dropdown y que quepa en la pantalla */
+  [role="listbox"] {
+    max-height: 60vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Mejorar contraste y visibilidad */
+  .mobile-dropdown-fix {
+    background-color: white !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
+  }
+  
+  /* Fix para Chrome en Android */
+  body:has([data-state="open"]) {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+  }
+  
+  /* Asegurar que los selectores tengan buena apariencia en Chrome Android */
+  @supports (-webkit-touch-callout: none) {
+    [role="listbox"] {
+      background-color: white !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+      border-radius: 8px !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      padding: 8px 0 !important;
+    }
+    
+    [role="option"] {
+      padding: 12px 16px !important;
+      min-height: 44px !important;
+      display: flex !important;
+      align-items: center !important;
+      font-size: 16px !important;
+    }
+  }
+}
+
+/* Prevenir que los eventos de toque propaguen mal en Chrome Android */
+#service-trigger:active,
+#time-trigger:active,
+#participants-trigger:active,
+[role="option"]:active {
+  background-color: rgba(0,0,0,0.05);
+  pointer-events: auto !important;
+}

@@ -1,0 +1,44 @@
+/* Correcciones para doble visualización de selectores en móviles */
+
+/* Asegurar que solo un tipo de select aparezca en cada vista */
+.mobile-view .native-mobile-select {
+  display: block !important;
+}
+
+.mobile-view .radix-select-hidden-for-mobile {
+  display: none !important;
+}
+
+/* En dispositivos móviles con traducción activa */
+.mobile-view.auto-translated .native-mobile-select {
+  /* Asegurarnos que aparezca correctamente */
+  text-align: left !important;
+  -webkit-text-size-adjust: none !important;
+  min-height: 44px !important;
+  height: auto !important;
+}
+
+/* Mejoras visuales para selectores en dispositivos móviles */
+.mobile-view .native-select-container {
+  margin-bottom: 0 !important;
+  min-height: 44px;
+  height: auto !important;
+}
+
+/* Optimizaciones para Android */
+.android-device .native-select-container {
+  min-height: 46px !important;
+}
+
+/* Optimizaciones para iOS */
+.ios-device .native-select-container {
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+}
+
+/* Solución específica para service select que tiene textos largos */
+.service-select-wrapper .native-mobile-select {
+  font-size: 15px !important;
+  letter-spacing: -0.2px;
+  padding-right: 30px !important;
+}

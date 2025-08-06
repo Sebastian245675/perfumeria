@@ -1,0 +1,94 @@
+/* mobile-inputs-fix.css - Mejoras específicas para inputs en dispositivos móviles */
+
+/* Mejoras para inputs numéricos en móviles */
+.mobile-numeric-input,
+input[type="number"],
+input[type="tel"] {
+  font-feature-settings: "tnum" !important;
+  font-variant-numeric: tabular-nums !important;
+  letter-spacing: -0.01em !important;
+  text-align: left !important;
+}
+
+/* Estilos específicos para dispositivos móviles */
+.mobile-device input[type="number"], 
+.mobile-device input[type="tel"],
+.mobile-device input[type="text"],
+.mobile-device input[type="email"],
+.mobile-device select,
+.mobile-device textarea {
+  /* Prevenir zoom en iOS */
+  font-size: 16px !important; 
+  /* Mejor área táctil */
+  padding: 12px 16px !important;
+  min-height: 48px !important;
+  /* Estilo visual mejorado */
+  border-radius: 8px !important;
+  border-width: 1px !important;
+  background-color: white !important;
+  /* Evitar problemas con los bordes */
+  box-sizing: border-box !important;
+  /* Mejorar legibilidad */
+  font-weight: normal !important;
+}
+
+/* Mejoras para visualización de selects en móviles */
+.mobile-optimized-select,
+.mobile-device select,
+.mobile-device .native-select-container {
+  /* Asegurar buena visibilidad */
+  background-color: white !important;
+  /* Sombra sutil para mejor contraste */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  /* Espaciado interno adecuado */
+  padding: 12px !important;
+  /* Estilo de borde */
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  border-radius: 8px !important;
+}
+
+/* Fixes específicos para Chrome en Android */
+.chrome-android input[type="number"],
+.chrome-android input[type="tel"] {
+  /* Chrome maneja el padding diferente */
+  padding-right: 8px !important;
+  /* Evitar problemas con borde especial */
+  appearance: textfield !important;
+}
+
+/* Fixes específicos para Safari en iOS */
+.safari-ios select,
+.safari-ios input[type="tel"],
+.safari-ios input[type="number"] {
+  /* Safari maneja el padding diferente */
+  padding-left: 12px !important;
+}
+
+/* Mejoras para números seleccionados en selectores */
+select option {
+  font-feature-settings: "tnum" !important;
+  font-variant-numeric: tabular-nums !important;
+  padding: 8px 12px !important;
+}
+
+/* Mejorar contraste para mejor legibilidad */
+.mobile-device input::placeholder {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Mayor área táctil para casillas y botones */
+.mobile-device button,
+.mobile-device [role="button"],
+.mobile-device label {
+  min-height: 44px !important;
+  padding: 12px !important;
+}
+
+/* Asegurar que los labels son claramente visibles */
+.mobile-device label {
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  color: #333 !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+}

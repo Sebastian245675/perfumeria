@@ -1,0 +1,106 @@
+/* Estilos específicos para prevenir problemas con traducción automática */
+
+/* Configuración global para todo el sitio */
+html, body {
+  translate: no !important;
+  -webkit-translate: no !important;
+  -moz-translate: no !important;
+  -ms-translate: no !important;
+}
+
+/* Clase para aplicar a elementos que no deben ser traducidos */
+.no-translate,
+.notranslate,
+[translate="no"] {
+  translate: no !important;
+  -webkit-translate: no !important;
+  -moz-translate: no !important;
+  -ms-translate: no !important;
+}
+
+/* Prevención de traducción para todos los elementos de formularios */
+input, 
+textarea, 
+select, 
+button, 
+label, 
+form, 
+.select-trigger, 
+.select-content, 
+.select-item, 
+option,
+.native-select-container,
+.native-mobile-select,
+[role="combobox"], 
+[role="listbox"], 
+[role="option"] {
+  translate: no !important;
+  -webkit-translate: no !important;
+  -moz-translate: no !important;
+  -ms-translate: no !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  text-rendering: optimizeLegibility !important;
+}
+
+/* Añadir atributo translate="no" a elementos críticos */
+[data-no-translate="true"],
+.no-translate-element,
+.service-select-wrapper select,
+select[name="service"],
+select[name="time"],
+select[name="participants"],
+input[name], 
+textarea[name], 
+button[type],
+[aria-label] {
+  translate: no !important;
+  -webkit-translate: no !important;
+}
+
+/* Estilos adicionales para prevenir problemas con traducciones automáticas */
+/* Se ha eliminado la alerta de traducción porque ahora prevenimos la traducción automática en lugar de mostrar advertencias */
+
+/* Prevenir problemas de visualización cuando el traductor está activo */
+body[translated="true"] .select-trigger span,
+html[translated="true"] .select-trigger span,
+body.auto-translated .select-trigger span,
+html.auto-translated .select-trigger span {
+  display: inline-block !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: none !important;
+  width: auto !important;
+}
+
+/* Fuente más grande para textos que pueden ser afectados por la traducción */
+body[translated="true"] select option,
+html[translated="true"] select option,
+body.auto-translated select option,
+html.auto-translated select option {
+  font-size: 16px !important;
+  padding: 8px 12px !important;
+}
+
+/* Añadir estilos específicos para garantizar que los selectores muestren el texto completo */
+body.auto-translated .native-mobile-select,
+html.auto-translated .native-mobile-select {
+  font-size: 16px !important;
+  padding-right: 30px !important;
+  text-overflow: ellipsis !important;
+  height: auto !important;
+  min-height: 42px !important;
+}
+
+/* Añadir indicador visual discreto cuando la página está traducida */
+body.auto-translated::after,
+html.auto-translated::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #ef4444 0%, #ef4444 100%);
+  z-index: 9000;
+}

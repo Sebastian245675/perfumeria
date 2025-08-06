@@ -1,0 +1,45 @@
+/* Estilos adicionales de última generación para máxima compatibilidad */
+
+/* Fix para dispositivos iOS (iPhone/iPad) */
+@supports (-webkit-touch-callout: none) {
+  #service-trigger,
+  #time-trigger,
+  #participants-trigger {
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+  }
+  
+  /* Mejorar la experiencia de toque en iOS */
+  [role="option"] {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+}
+
+/* Fix para Safari en Mac y iOS */
+@media not all and (min-resolution:.001dpcm) { 
+  @supports (-webkit-appearance:none) {
+    /* Fix para Safari */
+    .mobile-dropdown-fix {
+      transform: translateZ(0);
+    }
+    
+    [data-radix-popper-content-wrapper] {
+      /* Asegurar que los dropdowns aparezcan sobre todo */
+      transform: translateZ(9999px);
+    }
+  }
+}
+
+/* Fix para Chrome Android con versiones antiguas */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  [role="combobox"] {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  
+  /* Detecta problemas táctiles y arregla */
+  body:has([data-state="open"]) [role="option"]:hover {
+    background-color: rgba(0,0,0,0.05) !important;
+  }
+}

@@ -10,7 +10,10 @@ import AboutUsPage from "./pages/AboutUsPage";
 import ProposeFragrancePage from "./pages/ProposeFragrancePage";
 import NotFound from "./pages/NotFound";
 import { motion, AnimatePresence } from "framer-motion";
+import InstallNativeSelects from "./components/InstallNativeSelects"; // Importamos el instalador de selectores nativos
 import "./global-styles.css"; // Importamos los estilos globales personalizados
+import "./components/native-mobile-select.css"; // Importamos los estilos para selectores nativos
+import "./components/translation-fix.css"; // Importamos estilos para prevenir traducciones
 
 const queryClient = new QueryClient();
 
@@ -24,6 +27,19 @@ const App = () => {
     document.body.classList.add('page-loaded');
     document.body.classList.remove('loading-active');
     
+    // Prevenir traducción automática
+    document.documentElement.setAttribute('translate', 'no');
+    document.documentElement.classList.add('notranslate');
+    document.body.setAttribute('translate', 'no');
+    document.body.classList.add('notranslate');
+    
+    // Evitar traducción de selectores y formularios críticos
+    const criticalElements = document.querySelectorAll('select, input, textarea, button, label');
+    criticalElements.forEach(el => {
+      el.setAttribute('translate', 'no');
+      el.classList.add('notranslate');
+    });
+    
     // Scroll to top
     window.scrollTo(0, 0);
   }, []);
@@ -31,6 +47,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <InstallNativeSelects />
         <Toaster />
         <Sonner />
         

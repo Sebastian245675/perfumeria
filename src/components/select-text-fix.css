@@ -1,0 +1,70 @@
+/* select-text-fix.css - Mejoras específicas para la visualización de textos en selectores */
+
+/* Ajustes específicos para los textos de los selectores en dispositivos móviles */
+.mobile-device .native-select-service {
+  /* Ajustes específicos para el selector de tipo de servicio */
+  font-size: 14px !important; /* Ligeramente más pequeño para caber todo el texto */
+  line-height: 1.2 !important;
+  padding-top: 1px !important; /* Ajuste vertical para centrar mejor */
+}
+
+/* Mejorar la visibilidad de las opciones en los selectores */
+.native-mobile-select option {
+  padding: 12px 10px !important; 
+  font-size: 16px !important;
+  height: auto !important;
+  min-height: 36px !important;
+}
+
+/* Prevenir problemas de desbordamiento de texto */
+.mobile-device .service-select-wrapper .native-select-container {
+  padding-right: 25px !important; /* Más espacio para la flecha */
+  height: 44px !important;
+}
+
+/* Ajustes específicos para cada tipo de selector */
+.native-select-service option[value="corta"] {
+  color: #555 !important;
+}
+
+.native-select-service option[value="completa"] {
+  color: #333 !important;
+}
+
+/* Para garantizar que los textos se vean bien en todos los dispositivos Android */
+.android-device .native-mobile-select {
+  text-align: left !important;
+  text-indent: 0 !important;
+  letter-spacing: -0.2px !important; /* Ligeramente más compacto */
+}
+
+/* Ajustes específicos para Safari en iOS */
+.ios-device .native-mobile-select {
+  padding-top: 2px !important; /* Mejor centrado vertical en iOS */
+}
+
+/* Asegurar que los selectores de hora muestren bien las horas */
+.native-select-time {
+  font-feature-settings: "tnum" !important; /* Números tabulares */
+  text-align: left !important;
+  padding-left: 16px !important;
+}
+
+/* Asegurar que se ve bien en modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .native-mobile-select {
+    color: #222 !important;
+    background-color: #fff !important;
+  }
+}
+
+/* Mejor alineación de textos para opciones específicas */
+.native-mobile-select option {
+  padding: 8px 12px !important;
+}
+
+/* Aumentar el contraste para mejor legibilidad */
+.native-mobile-select,
+.native-mobile-select option {
+  color: black !important;
+}

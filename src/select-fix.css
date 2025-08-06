@@ -5,6 +5,9 @@
 [role="listbox"],
 [role="option"] {
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Stop propagation for select components */
@@ -13,6 +16,17 @@ select,
 [role="listbox"],
 [role="option"] {
   pointer-events: auto;
+}
+
+/* Fix for mobile browsers, especially Google Chrome on Android */
+@media (max-width: 768px) {
+  [data-radix-popper-content-wrapper] {
+    z-index: 9999 !important;
+  }
+  
+  [role="option"] {
+    min-height: 44px;
+  }
 }
 
 /* Add this specific fix for the appointment form */

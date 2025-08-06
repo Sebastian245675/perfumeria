@@ -13,6 +13,7 @@ import {
 } from "@/lib/firestore";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar, Clock } from "lucide-react";
+import "./calendar-transition-fix.css"; // Importamos las correcciones para la transición
 
 interface AppointmentCalendarNewProps {
   onSelectDateTime?: (date: Date | undefined, timeSlot?: string) => void;
@@ -77,14 +78,26 @@ export function AppointmentCalendarNew({
         
         // Esperamos a que termine la animación en el CalendarHeatmap (800ms)
         // y luego cerramos el modal y mostramos la pantalla de carga
+        // Aumentamos el tiempo para dar más margen a dispositivos más lentos
         setTimeout(() => {
-          if (isDialog) {
-            setIsOpen(false);
+          try {
+            // Forzamos actualización de sessionStorage para prevenir inconsistencias
+            sessionStorage.setItem('selectedDate', format(date, 'yyyy-MM-dd'));
+            sessionStorage.setItem('selectedTime', timeSlot);
+            
+            if (isDialog) {
+              setIsOpen(false);
+            }
+            
+            // Timeout adicional para permitir que el DOM se estabilice antes de cambiar la vista
+            setTimeout(() => {
+              // Llamar a la función para mostrar el formulario con pantalla de carga
+              onViewAppointmentForm?.();
+            }, 300);
+          } catch (error) {
+            console.error("Error en la transición del calendario:", error);
           }
-          
-          // Llamar a la función para mostrar el formulario con pantalla de carga
-          onViewAppointmentForm?.();
-        }, 1000); // Tiempo suficiente para que se vea la animación del calendario
+        }, 1200); // Tiempo suficiente para que se vea la animación del calendario y se complete el proceso
       }
     } else {
       setSelectedTimeSlot(undefined);
@@ -95,9 +108,36 @@ export function AppointmentCalendarNew({
   // Continuar al formulario de reserva
   const handleContinue = () => {
     if (selectedDate && selectedTimeSlot) {
-      onViewAppointmentForm?.();
-      if (isDialog) {
-        setIsOpen(false);
+      try {
+        // Guardamos los datos en sessionStorage como respaldo
+        sessionStorage.setItem('selectedDate', format(selectedDate, 'yyyy-MM-dd'));
+        sessionStorage.setItem('selectedTime', selectedTimeSlot);
+        
+        // Primero cerramos el modal y luego llamamos al formulario
+        if (isDialog) {
+          setIsOpen(false);
+          // Damos tiempo para que se complete la animación de cierre
+          setTimeout(() => {
+            onViewAppointmentForm?.();
+          }, 300);
+        } else {
+          // Si no es un diálogo, llamamos directamente
+          onViewAppointmentForm?.();
+        }
+        
+        // Enviamos un evento personalizado para que el navegador sepa que estamos
+        // haciendo una transición importante (útil para Chrome en Android)
+        const transitionEvent = new CustomEvent('calendar:selectionComplete', {
+          detail: { date: selectedDate, time: selectedTimeSlot }
+        });
+        document.dispatchEvent(transitionEvent);
+      } catch (error) {
+        console.error("Error al procesar la selección:", error);
+        toast({
+          title: "Error",
+          description: "Ocurrió un problema al procesar tu selección. Por favor intenta de nuevo.",
+          variant: "destructive"
+        });
       }
     } else {
       toast({
@@ -170,10 +210,19 @@ export function AppointmentCalendarNew({
         </TabsContent>
       </Tabs>
       
-      <CardFooter className="flex justify-end pt-4 border-t">
+      <CardFooter className="flex justify-between pt-4 border-t">
         {activeTab === "detalles" && (
           <Button variant="ghost" onClick={() => setActiveTab("calendario")}>
             Regresar al Calendario
+          </Button>
+        )}
+        
+        {selectedDate && selectedTimeSlot && activeTab === "detalles" && (
+          <Button 
+            onClick={handleContinue}
+            className="calendar-continue-button"
+          >
+            Continuar al formulario
           </Button>
         )}
       </CardFooter>

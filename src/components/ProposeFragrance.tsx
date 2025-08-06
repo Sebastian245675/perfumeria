@@ -31,6 +31,7 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/AuthContext";
 import { guardarPropuestaFragancia, verificarPropuestaReciente, PropuestaFragancia } from "@/lib/fragancias";
+import "./intensidad-slider.css"; // Importamos mejoras para el slider de intensidad
 import { Loader2, HelpCircle } from "lucide-react";
 import {
   Card,
@@ -438,9 +439,9 @@ const ProposeFragrance = () => {
                     name="intensidad"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex justify-between items-center">
-                          <FormLabel>Intensidad</FormLabel>
-                          <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-xs">
+                        <div className="flex justify-between items-center slider-container">
+                          <FormLabel className="slider-label">Intensidad</FormLabel>
+                          <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-xs intensidad-indicator">
                             {field.value}/5
                           </span>
                         </div>
@@ -451,7 +452,7 @@ const ProposeFragrance = () => {
                             step={1}
                             defaultValue={[field.value]}
                             onValueChange={(vals) => field.onChange(vals[0])}
-                            className="py-4"
+                            className="py-4 mobile-friendly-slider"
                           />
                         </FormControl>
                         <div className="flex justify-between text-xs text-muted-foreground">
@@ -468,9 +469,9 @@ const ProposeFragrance = () => {
                     name="duracion"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex justify-between items-center">
-                          <FormLabel>Duración estimada</FormLabel>
-                          <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-xs">
+                        <div className="flex justify-between items-center slider-container">
+                          <FormLabel className="slider-label">Duración estimada</FormLabel>
+                          <span className="bg-primary/10 text-primary rounded-md px-2 py-1 text-xs intensidad-indicator">
                             {field.value} horas
                           </span>
                         </div>
@@ -481,7 +482,7 @@ const ProposeFragrance = () => {
                             step={1}
                             defaultValue={[field.value]}
                             onValueChange={(vals) => field.onChange(vals[0])}
-                            className="py-4"
+                            className="py-4 mobile-friendly-slider"
                           />
                         </FormControl>
                         <div className="flex justify-between text-xs text-muted-foreground">

@@ -1,0 +1,166 @@
+/* Estilos específicos para dispositivos móviles */
+
+/* Contenedor para el select nativo */
+.mobile-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Estilizar el contenedor del select nativo */
+.native-select-container {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid hsl(var(--input));
+  background: hsl(var(--background));
+  padding: 0;
+  height: 44px; /* Altura aumentada para mostrar mejor el texto */
+  line-height: 44px;
+  overflow: hidden;
+  margin-bottom: 12px; /* Espacio adicional entre elementos */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08); /* Sombra sutil para mejor visualización */
+}
+
+/* Estilizar el select nativo para mejorar la apariencia */
+.native-mobile-select {
+  width: 100%;
+  height: 100%;
+  padding: 0 24px 0 14px; /* Más espacio a la derecha para la flecha */
+  font-size: 16px !important; /* Importante para evitar zoom en iOS */
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  z-index: 2;
+  white-space: nowrap; /* Evitar que los textos se corten */
+  text-overflow: ellipsis; /* Mostrar "..." si el texto es demasiado largo */
+  
+  /* Mejorar la visualización de números */
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  
+  /* Mejorar la legibilidad en móviles */
+  text-shadow: 0 0 0 currentColor;
+  
+  /* Ajuste para textos más visibles */
+  font-weight: 500;
+  line-height: 1.3;
+  height: 44px; /* Altura aumentada para mejor visualización */
+}
+
+/* Añadir flecha de dropdown */
+.native-select-container::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-left: 2px solid rgba(0,0,0,0.5);
+  border-bottom: 2px solid rgba(0,0,0,0.5);
+  transform: translateY(-30%) rotate(-45deg);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.7;
+}
+
+/* Focus y hover states */
+.native-select-container:hover {
+  border-color: hsl(var(--primary) / 0.5);
+}
+
+.native-mobile-select:focus + .native-select-container,
+.native-mobile-select:focus-within + .native-select-container {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.5);
+  outline: none;
+}
+
+/* Estilo para cuando está disabled */
+.native-mobile-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Ocultar el selector nativo si es necesario */
+.native-mobile-select-hidden {
+  display: none;
+}
+
+/* Específico para Chrome en Android */
+@media screen and (max-width: 768px) {
+  .native-select-container {
+    border: 2px solid hsl(var(--input));
+    height: 48px; /* Aún más grande en pantallas pequeñas */
+  }
+  
+  .native-mobile-select {
+    font-size: 16px !important;
+    padding: 8px 28px 8px 16px; /* Más padding a la derecha para evitar solapamiento con la flecha */
+    height: 48px;
+  }
+  
+  /* Específicamente para el tipo de visita (donde aparece '30 minutos') */
+  select[name="service"] option,
+  #native-service,
+  select#service {
+    font-size: 15px !important; /* Ligeramente más pequeño para textos largos */
+    padding-right: 30px !important; /* Más espacio para el texto completo */
+  }
+  
+  /* Para mostrar textos más completos en opciones específicas */
+  select option {
+    padding: 10px !important;
+    white-space: normal !important; /* Permitir wrap para textos largos */
+    min-height: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  /* Mejoras para los campos numéricos en móviles */
+  input[type="number"],
+  input[type="tel"],
+  select option {
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    text-align: left;
+  }
+  
+  /* Mejoras específicas para dispositivos móviles */
+  .mobile-device input, 
+  .mobile-device select,
+  .mobile-device textarea,
+  .mobile-device .native-select-container {
+    font-size: 16px !important; /* Prevenir zoom en iOS */
+    padding: 12px 16px !important;
+    min-height: 48px !important; /* Mayor área táctil */
+    border-radius: 8px !important;
+    margin-bottom: 12px !important;
+  }
+  
+  /* Específicamente para casillas en dispositivos móviles */
+  .mobile-device .native-select-container {
+    border-width: 1px !important;
+    background-color: white !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  /* Mejora para números en Chrome Android */
+  .chrome-android input[type="number"],
+  .chrome-android input[type="tel"] {
+    padding-right: 8px !important;
+  }
+  
+  /* Mejora para Safari en iOS */
+  .safari-ios select,
+  .safari-ios .native-mobile-select {
+    padding-left: 11px !important; /* Safari tiene un manejo diferente del padding */
+  }
+}

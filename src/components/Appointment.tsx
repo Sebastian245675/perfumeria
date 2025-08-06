@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import NativeMobileSelect from "./NativeMobileSelect"; // Importamos el componente nativo para móviles
 import { Textarea } from "@/components/ui/textarea";
 import { X, Clock, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +12,10 @@ import { useAuth } from "@/lib/AuthContext";
 
 // CSS for visual feedback and fixes
 import "./appointment.css";
+import "./appointment-fix.css"; // Importamos correcciones específicas
+import "./cross-browser-fixes.css"; // Correcciones para diferentes navegadores
+import "./calendar-transition-fix.css"; // Correcciones para transiciones entre calendario y formulario
+import "./native-mobile-select.css"; // Estilos para los selects nativos en móviles
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -49,6 +54,30 @@ const Appointment = () => {
       }));
     }
   }, [currentUser, userData]);
+  
+  // Efecto para manejar interacciones con selectores en móviles
+  useEffect(() => {
+    // Función para limpiar estados y clases cuando se desmonta el componente o cambia la página
+    const cleanupSelects = () => {
+      document.body.classList.remove("select-open");
+      document.body.style.touchAction = "auto";
+      
+      // Limpiar cualquier selector abierto
+      const openSelects = document.querySelectorAll('[data-state="open"]');
+      openSelects.forEach(select => {
+        (select as HTMLElement).setAttribute('data-state', 'closed');
+      });
+    };
+    
+    // Agregar detector para cuando el usuario abandona la página
+    window.addEventListener('beforeunload', cleanupSelects);
+    
+    // Limpiar al desmontar el componente
+    return () => {
+      cleanupSelects();
+      window.removeEventListener('beforeunload', cleanupSelects);
+    };
+  }, []);
   
   // Script para manejar transiciones sin scroll visible y garantizar que el overlay desaparezca
   useEffect(() => {
@@ -687,46 +716,81 @@ const Appointment = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="service">Tipo de visita *</Label>
-                    <Select 
-                      name="service" 
-                      value={appointmentData.service} 
-                      onValueChange={(value) => {
-                        try {
-                          handleSelectChange("service", value);
-                        } catch (err) {
-                          console.error("Error al seleccionar servicio:", err);
-                          toast({
-                            title: "Error",
-                            description: "Ocurrió un problema al seleccionar el servicio. Inténtalo nuevamente.",
-                            variant: "destructive"
-                          });
-                        }
-                      }}
-                      required
-                    >
-                      <SelectTrigger 
-                        id="service" 
-                        onClick={(e) => {
-                          // Prevent triggering form submission when opening dropdown
-                          e.preventDefault();
-                          e.stopPropagation();
+                    
+                    {/* Componente para móviles */}
+                    <NativeMobileSelect
+                      name="service"
+                      id="service"
+                      value={appointmentData.service}
+                      onChange={(value) => handleSelectChange("service", value)}
+                      placeholder="Selecciona un tipo de visita"
+                      options={[
+                        { value: "corta", label: "Visita Express (30min)" },
+                        { value: "completa", label: "Visita Completa (60min)" }
+                      ]}
+                      className="service-select-wrapper no-translate block md:hidden"
+                      required={true}
+                      disabled={formStatus === 'submitting'}
+                    />
+                    
+                    {/* Mantenemos el select original pero solo se mostrará en desktop */}
+                    <div className="hidden md:block">
+                      <Select 
+                        name="service" 
+                        value={appointmentData.service} 
+                        onValueChange={(value) => {
+                          try {
+                            handleSelectChange("service", value);
+                          } catch (err) {
+                            console.error("Error al seleccionar servicio:", err);
+                            toast({
+                              title: "Error",
+                              description: "Ocurrió un problema al seleccionar el servicio. Inténtalo nuevamente.",
+                              variant: "destructive"
+                            });
+                          }
                         }}
-                        onMouseDown={(e) => e.preventDefault()}
-                        className={formStatus === 'submitting' ? 'opacity-50' : ''}
+                        required
                       >
-                        <SelectValue placeholder="Selecciona un tipo de visita" />
-                      </SelectTrigger>
-                      <SelectContent 
-                        position="popper" 
-                        sideOffset={5} 
-                        onCloseAutoFocus={(e) => e.preventDefault()}
-                        onEscapeKeyDown={(e) => e.preventDefault()}
-                        onPointerDownOutside={(e) => e.preventDefault()}
-                      >
-                        <SelectItem value="corta" onSelect={(e) => e.preventDefault()}>Visita Express (30 min)</SelectItem>
-                        <SelectItem value="completa" onSelect={(e) => e.preventDefault()}>Visita Completa (60 min)</SelectItem>
-                      </SelectContent>
-                    </Select>
+                        <SelectTrigger 
+                          id="service-trigger" 
+                          onClick={(e) => {
+                            // Prevent triggering form submission when opening dropdown
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onMouseDown={(e) => e.preventDefault()}
+                          className={formStatus === 'submitting' ? 'opacity-50' : ''}
+                        >
+                          <SelectValue placeholder="Selecciona un tipo de visita" />
+                        </SelectTrigger>
+                        <SelectContent 
+                          position="popper" 
+                          sideOffset={5}
+                          className="mobile-dropdown-fix"
+                          onCloseAutoFocus={(e) => e.preventDefault()}
+                          onEscapeKeyDown={(e) => e.preventDefault()}
+                          onPointerDownOutside={(e) => {
+                            e.preventDefault();
+                            // Solución universal para todos los navegadores
+                            setTimeout(() => {
+                              const body = document.body;
+                              body.style.touchAction = "auto";
+                              body.classList.remove("select-open");
+                              
+                              // Verificar el dispositivo
+                              if(/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                                // Forzar reflow del DOM para corregir problemas visuales
+                                document.body.getBoundingClientRect();
+                              }
+                            }, 200);
+                          }}
+                        >
+                          <SelectItem value="corta" onSelect={(e) => e.preventDefault()}>Visita Express (30 min)</SelectItem>
+                          <SelectItem value="completa" onSelect={(e) => e.preventDefault()}>Visita Completa (60 min)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
 
@@ -756,113 +820,188 @@ const Appointment = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="time">Hora *</Label>
-                    <Select 
-                      name="time" 
-                      value={appointmentData.time} 
-                      onValueChange={(value) => {
-                        try {
-                          handleSelectChange("time", value);
-                        } catch (err) {
-                          console.error("Error al seleccionar hora:", err);
-                          toast({
-                            title: "Error",
-                            description: "Ocurrió un problema al seleccionar la hora. Inténtalo nuevamente.",
-                            variant: "destructive"
-                          });
-                        }
-                      }}
-                      required
-                    >
-                      <SelectTrigger 
-                        id="time" 
-                        onClick={(e) => {
-                          // Prevent triggering form submission when opening dropdown
-                          e.preventDefault();
-                          e.stopPropagation();
+                    
+                    {/* Componente para móviles */}
+                    <NativeMobileSelect
+                      name="time"
+                      id="time"
+                      value={appointmentData.time}
+                      onChange={(value) => handleSelectChange("time", value)}
+                      placeholder="Selecciona una hora"
+                      className="no-translate block md:hidden"
+                      options={[
+                        { value: "09:30", label: "09:30" },
+                        { value: "10:00", label: "10:00" },
+                        { value: "10:30", label: "10:30" },
+                        { value: "11:00", label: "11:00" },
+                        { value: "11:30", label: "11:30" },
+                        { value: "12:00", label: "12:00" },
+                        { value: "12:30", label: "12:30" },
+                        { value: "15:00", label: "15:00" },
+                        { value: "15:30", label: "15:30" },
+                        { value: "16:00", label: "16:00" },
+                        { value: "16:30", label: "16:30" },
+                        { value: "17:00", label: "17:00" },
+                        { value: "17:30", label: "17:30" },
+                        { value: "18:00", label: "18:00" },
+                        { value: "18:30", label: "18:30" },
+                        { value: "19:00", label: "19:00" },
+                        { value: "19:30", label: "19:30" },
+                        { value: "20:00", label: "20:00" },
+                        { value: "20:30", label: "20:30" }
+                      ]}
+                      required={true}
+                      disabled={formStatus === 'submitting'}
+                    />
+                    
+                    {/* Mantenemos el select original pero solo se mostrará en desktop */}
+                    <div className="hidden md:block">
+                      <Select 
+                        name="time" 
+                        value={appointmentData.time} 
+                        onValueChange={(value) => {
+                          try {
+                            handleSelectChange("time", value);
+                          } catch (err) {
+                            console.error("Error al seleccionar hora:", err);
+                            toast({
+                              title: "Error",
+                              description: "Ocurrió un problema al seleccionar la hora. Inténtalo nuevamente.",
+                              variant: "destructive"
+                            });
+                          }
                         }}
-                        onMouseDown={(e) => e.preventDefault()}
-                        className={formStatus === 'submitting' ? 'opacity-50' : ''}
+                        required
                       >
-                        <SelectValue placeholder="Selecciona una hora" />
-                      </SelectTrigger>
-                      <SelectContent 
-                        position="popper" 
-                        sideOffset={5} 
-                        onCloseAutoFocus={(e) => e.preventDefault()}
-                        onEscapeKeyDown={(e) => e.preventDefault()}
-                        onPointerDownOutside={(e) => e.preventDefault()}
-                      >
-                        <SelectItem value="09:30" onSelect={(e) => e.preventDefault()}>09:30</SelectItem>
-                        <SelectItem value="10:00" onSelect={(e) => e.preventDefault()}>10:00</SelectItem>
-                        <SelectItem value="10:30" onSelect={(e) => e.preventDefault()}>10:30</SelectItem>
-                        <SelectItem value="11:00" onSelect={(e) => e.preventDefault()}>11:00</SelectItem>
-                        <SelectItem value="11:30" onSelect={(e) => e.preventDefault()}>11:30</SelectItem>
-                        <SelectItem value="12:00" onSelect={(e) => e.preventDefault()}>12:00</SelectItem>
-                        <SelectItem value="12:30" onSelect={(e) => e.preventDefault()}>12:30</SelectItem>
-                        <SelectItem value="15:00" onSelect={(e) => e.preventDefault()}>15:00</SelectItem>
-                        <SelectItem value="15:30" onSelect={(e) => e.preventDefault()}>15:30</SelectItem>
-                        <SelectItem value="16:00" onSelect={(e) => e.preventDefault()}>16:00</SelectItem>
-                        <SelectItem value="16:30" onSelect={(e) => e.preventDefault()}>16:30</SelectItem>
-                        <SelectItem value="17:00" onSelect={(e) => e.preventDefault()}>17:00</SelectItem>
-                        <SelectItem value="17:30" onSelect={(e) => e.preventDefault()}>17:30</SelectItem>
-                        <SelectItem value="18:00" onSelect={(e) => e.preventDefault()}>18:00</SelectItem>
-                        <SelectItem value="18:30" onSelect={(e) => e.preventDefault()}>18:30</SelectItem>
-                        <SelectItem value="19:00" onSelect={(e) => e.preventDefault()}>19:00</SelectItem>
-                        <SelectItem value="19:30" onSelect={(e) => e.preventDefault()}>19:30</SelectItem>
-                        <SelectItem value="20:00" onSelect={(e) => e.preventDefault()}>20:00</SelectItem>
-                        <SelectItem value="20:30" onSelect={(e) => e.preventDefault()}>20:30</SelectItem>
-                      </SelectContent>
-                    </Select>
+                        <SelectTrigger 
+                          id="time-trigger" 
+                          onClick={(e) => {
+                            // Prevent triggering form submission when opening dropdown
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onMouseDown={(e) => e.preventDefault()}
+                          className={formStatus === 'submitting' ? 'opacity-50' : ''}
+                        >
+                          <SelectValue placeholder="Selecciona una hora" />
+                        </SelectTrigger>
+                        <SelectContent 
+                          position="popper" 
+                          sideOffset={5}
+                          className="mobile-dropdown-fix"
+                          onCloseAutoFocus={(e) => e.preventDefault()}
+                          onEscapeKeyDown={(e) => e.preventDefault()}
+                          onPointerDownOutside={(e) => {
+                            e.preventDefault();
+                            setTimeout(() => {
+                              document.body.style.touchAction = "auto";
+                              document.body.classList.remove("select-open");
+                            }, 200);
+                          }}
+                        >
+                          <SelectItem value="09:30" onSelect={(e) => e.preventDefault()}>09:30</SelectItem>
+                          <SelectItem value="10:00" onSelect={(e) => e.preventDefault()}>10:00</SelectItem>
+                          <SelectItem value="10:30" onSelect={(e) => e.preventDefault()}>10:30</SelectItem>
+                          <SelectItem value="11:00" onSelect={(e) => e.preventDefault()}>11:00</SelectItem>
+                          <SelectItem value="11:30" onSelect={(e) => e.preventDefault()}>11:30</SelectItem>
+                          <SelectItem value="12:00" onSelect={(e) => e.preventDefault()}>12:00</SelectItem>
+                          <SelectItem value="12:30" onSelect={(e) => e.preventDefault()}>12:30</SelectItem>
+                          <SelectItem value="15:00" onSelect={(e) => e.preventDefault()}>15:00</SelectItem>
+                          <SelectItem value="15:30" onSelect={(e) => e.preventDefault()}>15:30</SelectItem>
+                          <SelectItem value="16:00" onSelect={(e) => e.preventDefault()}>16:00</SelectItem>
+                          <SelectItem value="16:30" onSelect={(e) => e.preventDefault()}>16:30</SelectItem>
+                          <SelectItem value="17:00" onSelect={(e) => e.preventDefault()}>17:00</SelectItem>
+                          <SelectItem value="17:30" onSelect={(e) => e.preventDefault()}>17:30</SelectItem>
+                          <SelectItem value="18:00" onSelect={(e) => e.preventDefault()}>18:00</SelectItem>
+                          <SelectItem value="18:30" onSelect={(e) => e.preventDefault()}>18:30</SelectItem>
+                          <SelectItem value="19:00" onSelect={(e) => e.preventDefault()}>19:00</SelectItem>
+                          <SelectItem value="19:30" onSelect={(e) => e.preventDefault()}>19:30</SelectItem>
+                          <SelectItem value="20:00" onSelect={(e) => e.preventDefault()}>20:00</SelectItem>
+                          <SelectItem value="20:30" onSelect={(e) => e.preventDefault()}>20:30</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="participants">Número de personas *</Label>
-                    <Select 
-                      name="participants" 
-                      value={appointmentData.participants} 
-                      onValueChange={(value) => {
-                        try {
-                          handleSelectChange("participants", value);
-                        } catch (err) {
-                          console.error("Error al seleccionar participantes:", err);
-                          toast({
-                            title: "Error",
-                            description: "Ocurrió un problema al seleccionar la cantidad de personas. Inténtalo nuevamente.",
-                            variant: "destructive"
-                          });
-                        }
-                      }}
-                      required
-                    >
-                      <SelectTrigger 
-                        id="participants" 
-                        onClick={(e) => {
-                          // Prevent triggering form submission when opening dropdown
-                          e.preventDefault();
-                          e.stopPropagation();
+                    
+                    {/* Componente para móviles */}
+                    <NativeMobileSelect
+                      name="participants"
+                      id="participants"
+                      value={appointmentData.participants}
+                      onChange={(value) => handleSelectChange("participants", value)}
+                      placeholder="Selecciona cantidad"
+                      className="no-translate block md:hidden"
+                      options={[
+                        { value: "1", label: "1 persona" },
+                        { value: "2", label: "2 personas" },
+                        { value: "3", label: "3 personas" },
+                        { value: "4", label: "4 personas" },
+                        { value: "5", label: "5 personas" },
+                        { value: "6", label: "6 personas" }
+                      ]}
+                      required={true}
+                      disabled={formStatus === 'submitting'}
+                    />
+                    
+                    {/* Mantenemos el select original pero solo se mostrará en desktop */}
+                    <div className="hidden md:block">
+                      <Select 
+                        name="participants" 
+                        value={appointmentData.participants} 
+                        onValueChange={(value) => {
+                          try {
+                            handleSelectChange("participants", value);
+                          } catch (err) {
+                            console.error("Error al seleccionar participantes:", err);
+                            toast({
+                              title: "Error",
+                              description: "Ocurrió un problema al seleccionar la cantidad de personas. Inténtalo nuevamente.",
+                              variant: "destructive"
+                            });
+                          }
                         }}
-                        onMouseDown={(e) => e.preventDefault()}
-                        className={formStatus === 'submitting' ? 'opacity-50' : ''}
+                        required
                       >
-                        <SelectValue placeholder="Selecciona cantidad" />
-                      </SelectTrigger>
-                      <SelectContent 
-                        position="popper" 
-                        sideOffset={5} 
-                        onCloseAutoFocus={(e) => e.preventDefault()}
-                        onEscapeKeyDown={(e) => e.preventDefault()}
-                        onPointerDownOutside={(e) => e.preventDefault()}
-                      >
-                        <SelectItem value="1" onSelect={(e) => e.preventDefault()}>1 persona</SelectItem>
-                        <SelectItem value="2" onSelect={(e) => e.preventDefault()}>2 personas</SelectItem>
-                        <SelectItem value="3" onSelect={(e) => e.preventDefault()}>3 personas</SelectItem>
-                        <SelectItem value="4" onSelect={(e) => e.preventDefault()}>4 personas</SelectItem>
-                        <SelectItem value="5" onSelect={(e) => e.preventDefault()}>5 personas</SelectItem>
-                        <SelectItem value="6" onSelect={(e) => e.preventDefault()}>6 personas</SelectItem>
-                      </SelectContent>
-                    </Select>
+                        <SelectTrigger 
+                          id="participants-trigger" 
+                          onClick={(e) => {
+                            // Prevent triggering form submission when opening dropdown
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onMouseDown={(e) => e.preventDefault()}
+                          className={formStatus === 'submitting' ? 'opacity-50' : ''}
+                        >
+                          <SelectValue placeholder="Selecciona cantidad" />
+                        </SelectTrigger>
+                        <SelectContent 
+                          position="popper" 
+                          sideOffset={5}
+                          className="mobile-dropdown-fix"
+                          onCloseAutoFocus={(e) => e.preventDefault()}
+                          onEscapeKeyDown={(e) => e.preventDefault()}
+                          onPointerDownOutside={(e) => {
+                            e.preventDefault();
+                            setTimeout(() => {
+                              document.body.style.touchAction = "auto";
+                              document.body.classList.remove("select-open");
+                            }, 200);
+                          }}
+                        >
+                          <SelectItem value="1" onSelect={(e) => e.preventDefault()}>1 persona</SelectItem>
+                          <SelectItem value="2" onSelect={(e) => e.preventDefault()}>2 personas</SelectItem>
+                          <SelectItem value="3" onSelect={(e) => e.preventDefault()}>3 personas</SelectItem>
+                          <SelectItem value="4" onSelect={(e) => e.preventDefault()}>4 personas</SelectItem>
+                          <SelectItem value="5" onSelect={(e) => e.preventDefault()}>5 personas</SelectItem>
+                          <SelectItem value="6" onSelect={(e) => e.preventDefault()}>6 personas</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
 
